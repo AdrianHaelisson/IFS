@@ -7,7 +7,7 @@ const fs = require("fs");
 const minha_var = "Conteúdo salvo no arquivo";
 
 //2. Abrir/criar arquivo .txt e 3. colocar informação dentro do arquivo.txt
-fs.writeFile("BD_1/atividadeBD/meuarquivo.txt", minha_var, (err) => {
+fs.writeFile("BD_1/atividadeBD_28-04/meuarquivo.txt", minha_var, (err) => {
   if (err) {
     console.error("Erro ao escrever no arquivo: ", err);
     return;
@@ -15,7 +15,7 @@ fs.writeFile("BD_1/atividadeBD/meuarquivo.txt", minha_var, (err) => {
 });
 
 fs.appendFile(
-  "BD_1/atividadeBD/meuarquivo.txt",
+  "BD_1/atividadeBD_28-04/meuarquivo.txt",
   "\nadicionei mais coisa",
   (err) => {
     if (err) {
@@ -25,14 +25,18 @@ fs.appendFile(
   }
 );
 
-fs.appendFile("BD_1/atividadeBD/meuarquivo2.txt", "Mais um teste\n", (err) => {
-  if (err) {
-    console.error("Erro ao fazer pela segunda vez", err);
-    return;
-  }
-});
 fs.appendFile(
-  "BD_1/atividadeBD/meuarquivo3.txt",
+  "BD_1/atividadeBD_28-04/meuarquivo2.txt",
+  "Mais um teste\n",
+  (err) => {
+    if (err) {
+      console.error("Erro ao fazer pela segunda vez", err);
+      return;
+    }
+  }
+);
+fs.appendFile(
+  "BD_1/atividadeBD_28-04/meuarquivo3.txt",
   "Teste 3, só tô testando...\n",
   (err) => {
     if (err) {
