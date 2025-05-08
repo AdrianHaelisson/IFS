@@ -1,6 +1,14 @@
-function calculaMedia(nota1: number, nota2: number, nota3: number): Number {
-  return (nota1 + nota2 + nota3) / 3;
+//let prompt = require("prompt-sync")();
+import promptConfig from "prompt-sync";
+let prompt = promptConfig();
+
+function calculaMedia(): number {
+  const nota1 = Number(prompt("Digite sua primeira nota: "));
+  const nota2 = Number(prompt("Digite sua segunda nota: "));
+  const nota3 = Number(prompt("Digite sua terceira nota: "));
+
+  const media = (nota1 + nota2 + nota3) / 3;
+  return media;
 }
 
-let media = calculaMedia(9, 8, 7);
-console.log(typeof media);
+console.log(calculaMedia());
