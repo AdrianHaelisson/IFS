@@ -1,0 +1,47 @@
+// ATIVIDADE:
+// Criar uma classe de cursos, com métodos e funções específicas
+
+
+
+// Definindo a classe Aluno
+class Aluno {
+    constructor(nome, matricula, curso, nota1, nota2) {
+      this.nome = nome;
+      this.matricula = matricula;
+      this.curso = curso;
+      this.nota1 = nota1;
+      this.nota2 = nota2;
+    }
+ 
+    calcularMedia() {
+      return (this.nota1 + this.nota2) / 2;
+    }
+    mostrarDados() {
+      console.log("Nome:", this.nome);
+      console.log("Matrícula:", this.matricula);
+      console.log("Curso:", this.curso);
+      console.log("Média:", this.calcularMedia().toFixed(2));
+      console.log("Situação:", this.verificarAprovacao());
+      console.log("-----------------------------");
+    }
+   
+    verificarAprovacao() {
+      const media = this.calcularMedia();
+      return media >= 6 ? "Aprovado" : "Reprovado";
+    }
+ 
+   
+  }
+ 
+  // Criando objetos de Aluno (simulando entrada de dados)
+  const aluno1 = new Aluno("João Silva", "2023001", "Engenharia", 7.5, 8.0);
+  const aluno2 = new Aluno("Maria Oliveira", "2023002", "Informática", 5.0, 6.0);
+ 
+  // Armazenando os alunos em um array
+  const listaAlunos = [aluno1, aluno2];
+ 
+  // Exibindo os dados de todos os alunos
+  for (let aluno of listaAlunos) {
+    aluno.mostrarDados();
+  }
+ 
