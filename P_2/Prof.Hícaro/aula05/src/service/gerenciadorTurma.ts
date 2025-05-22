@@ -49,7 +49,9 @@ export function consultaSituacaoAluno(matricula: number) {
     );
   } else {
     console.log(
-      `A média do aluno ${aluno.nome} foi ${media}, o aluno está reprovado`
+      `A média do aluno ${aluno.nome} foi ${media.toFixed(
+        2
+      )}, o aluno está reprovado`
     );
   }
 }
