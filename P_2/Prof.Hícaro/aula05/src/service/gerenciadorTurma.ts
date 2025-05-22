@@ -8,29 +8,48 @@ export function matriculaAluno(aluno: estudante) {
 export function excluirAluno(matricula: number): estudante {
   for (let i = 0; i < turmaDB.length; i++) {
     if (turmaDB[i].matricula === matricula) {
+      const alunoRemovido = turmaDB[i];
       turmaDB.splice(i, 1);
-      return turmaDB[i];
+      return alunoRemovido;
     }
   }
   return { matricula: -1, nome: "Not found", notas: [] };
 }
 
-export function encontrarAlunoPorMatricula(matricula: number): estudante {
+export function calcularMedia(notas: number[]): number {
+  let soma = 0;
+  for (let i = 0; i < notas.length; i++) {
+    soma += notas[i];
+  }
+  return soma / notas.length;
+}
+
+export function encontrarAlunoPorMatricula(
+  matricula: number
+): estudante | null {
   for (let i = 0; i < turmaDB.length; i++) {
     if (turmaDB[i].matricula === matricula) {
       return turmaDB[i];
     }
   }
-  return { matricula: -1, nome: "Not found", notas: [] };
+  return null;
 }
-
 export function consultaSituacaoAluno(matricula: number) {
   let aluno = encontrarAlunoPorMatricula(matricula);
-
-  let media = calculaMedia(aluno.media);
+  if (aluno === null) {
+    console.log("Aluno não encontrado");
+    return;
+  }
+  let media = calcularMedia(aluno.notas);
   if (media >= 6) {
-    console.log("Aluno aprovado!");
+    console.log(
+      `A média do aluno ${aluno.nome} foi ${media.toFixed(
+        2
+      )}, o aluno está aprovado`
+    );
   } else {
-    console.log("Aluno reprovado!");
+    console.log(
+      `A média do aluno ${aluno.nome} foi ${media}, o aluno está reprovado`
+    );
   }
 }

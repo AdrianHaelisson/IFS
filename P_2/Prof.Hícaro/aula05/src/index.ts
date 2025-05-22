@@ -7,8 +7,7 @@ import {
   matriculaAluno,
 } from "./service/gerenciadorTurma";
 
-let pessoa: estudante = { matricula: 1234, nome: "Vitor", notas: [2, 3, 4] };
+let pessoa: estudante = { matricula: 1234, nome: "Vitor", notas: [9, 10, 4] };
 
 matriculaAluno(pessoa);
-console.log(turmaDB);
 consultaSituacaoAluno(1234);
