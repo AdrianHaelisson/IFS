@@ -1,5 +1,6 @@
 import { estudante } from "../model/student";
 import { turmaDB } from "../data/turmaDB";
+import { Result } from "../utils/results";
 
 export function matriculaAluno(aluno: estudante) {
   turmaDB.push(aluno);
@@ -26,13 +27,13 @@ export function calcularMedia(notas: number[]): number {
 
 export function encontrarAlunoPorMatricula(
   matricula: number
-): estudante | null {
+): Result<estudante> {
   for (let i = 0; i < turmaDB.length; i++) {
     if (turmaDB[i].matricula === matricula) {
-      return turmaDB[i];
+      return {sucesso:true, dado:turmaDB[i]};
     }
   }
-  return null;
+  return {sucesso:false, erro:'Aluno não encontrado'};
 }
 export function consultaSituacaoAluno(matricula: number) {
   let aluno = encontrarAlunoPorMatricula(matricula);

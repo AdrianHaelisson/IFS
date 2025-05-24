@@ -1,0 +1,1 @@
+export type Result<T> = {sucesso:true, dado:T} | {sucesso:false, erro:string}
