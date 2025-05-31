@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rant - Página Inicial</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="https://placehold.co/100x50/61dafb/333333?text=RANT&font=lora" alt="Logo Rant" class="logo-img">
+                </div>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre.html">Sobre Mim</a></li>
+                    <li><a href="tecnologia.html">Tecnologia</a></li>
+                    <li><a href="vida_trabalho.html">Vida & Trabalho</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Bem-vindo ao Rant!</h1>
+            <p>Um espaço para desabafos, ideias e muita divagação sobre tecnologia, vida, trabalho e o que mais vier à cabeça.</p>
+            <a href="#destaques" class="cta-button">Ver Destaques</a>
+        </section>
+
+        <section id="destaques" class="posts-carousel-section">
+            <h2>Posts em Destaque</h2>
+            <div class="posts-carousel-container">
+                <div class="posts-carousel">
+                    <article class="post-card">
+                        <img src="https://placehold.co/400x300/7c3aed/ffffff?text=Tecnologia+Hoje" alt="Imagem de destaque sobre tecnologia" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/333333?text=Erro+ao+carregar+imagem';">
+                        <h3><a href="tecnologia.html#post1">O Futuro da Inteligência Artificial</a></h3>
+                        <p>Uma breve reflexão sobre como a IA está moldando nosso cotidiano e o que esperar para os próximos anos...</p>
+                        <a href="tecnologia.html#post1" class="read-more">Leia Mais</a>
+                    </article>
+
+                    <article class="post-card">
+                        <img src="https://placehold.co/400x300/10b981/ffffff?text=Vida+no+Escritório" alt="Imagem de destaque sobre vida no trabalho" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/333333?text=Erro+ao+carregar+imagem';">
+                        <h3><a href="vida_trabalho.html#post1">Desafios do Trabalho Remoto</a></h3>
+                        <p>Trabalhar de casa tem seus benefícios, mas também apresenta obstáculos únicos. Vamos discutir alguns deles...</p>
+                        <a href="vida_trabalho.html#post1" class="read-more">Leia Mais</a>
+                    </article>
+
+                    <article class="post-card">
+                        <img src="https://placehold.co/400x300/f59e0b/ffffff?text=Novo+Post+Tech" alt="Imagem de um novo post sobre tecnologia" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/333333?text=Erro+ao+carregar+imagem';">
+                        <h3><a href="#">Outro Post Sobre Tech</a></h3>
+                        <p>Mais divagações sobre o mundo da tecnologia, explorando as últimas novidades e tendências do setor.</p>
+                        <a href="#" class="read-more">Leia Mais</a>
+                    </article>
+
+                     <article class="post-card">
+                        <img src="https://placehold.co/400x300/ef4444/ffffff?text=Reflexões" alt="Imagem de um post de reflexão" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/333333?text=Erro+ao+carregar+imagem';">
+                        <h3><a href="#">Reflexões Aleatórias</a></h3>
+                        <p>Pensamentos soltos sobre a vida, o universo e tudo mais. Um convite à introspecção e ao debate.</p>
+                        <a href="#" class="read-more">Leia Mais</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="video-section">
+            <h2>Um Pouco de Inspiração</h2>
+            <p>Às vezes, um vídeo pode dizer mais que mil palavras. Veja este aqui sobre criatividade:</p>
+            <div class="video-container">
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/fa8k8IQ1_X0" title="A.I. ‐ Humanity&#39;s Final Invention?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p class="video-caption">Fonte: YouTube - Kurzgesagt – In a Nutshell</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© <span id="currentYear"></span> Rant. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>
