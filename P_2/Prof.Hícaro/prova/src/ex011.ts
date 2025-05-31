@@ -1,9 +1,9 @@
-let nomeAluno:string = 'Adrian'
-let listaDeAlunos:string [] = ['Adrian', 'Paulo', 'João', 'Marcelo', 'Luiza']
+const nomeAluno:string = 'Adrian'
+const listaDeAlunos:string [] = ['Adrian', 'Paulo', 'João', 'Marcelo', 'Luiza']
 
-function buscarAluno(nomeAluno:string, lista:string[]){
-    for(let i = 0; i < lista.length; i++){
-        const alunoAtual:string = listaDeAlunos[i]
+function buscarAluno(nomeAluno:string, listaDeAlunos: string[]): string{
+    for(let i: number = 0; i < listaDeAlunos.length; i++){
+        const alunoAtual: string = listaDeAlunos[i]
         if(alunoAtual === nomeAluno){
             return `${nomeAluno} encontrado`
         }

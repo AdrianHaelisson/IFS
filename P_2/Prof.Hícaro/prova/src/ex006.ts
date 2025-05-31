@@ -1,10 +1,6 @@
-let idadeMotorista:number = 17
-function podeDirigir(idadeMotorista:number){
-    if (idadeMotorista >= 18){
-        return true
-    }else{
-        return false
-    }
+const idadeMotorista: number = 18
+function podeDirigir(idadeMotorista: number): boolean{
+    return idadeMotorista >= 18
 }
-let dirigir = podeDirigir(idadeMotorista)
+const dirigir = podeDirigir(idadeMotorista)
 console.log(dirigir)

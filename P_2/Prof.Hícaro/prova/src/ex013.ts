@@ -1,4 +1,4 @@
-let senha: string = 'Adrian'
+const senha: string = 'Adrian'
 function senhaForte(senha: string): boolean {
   if (senha.length < 8) {
     console.log("Erro: Senha tem menos de 8 caracteres.");

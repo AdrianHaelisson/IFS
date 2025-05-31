@@ -1,4 +1,4 @@
-let idade:number = 65
+const idade: number = 65
 
 if(idade < 6 || idade > 65){
     console.log('Entrada gratuita')
