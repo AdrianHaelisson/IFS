@@ -1,5 +1,6 @@
 // Classe ABSTRATA que define o modelo de uma conta bancária
-class ContaBancaria{
+function banco(){
+    class ContaBancaria{
     titular: string;
     saldo: number;
     constructor(titular: string, saldoInicial: number = 0){
@@ -46,3 +47,5 @@ const contaJoao = new ContaCorrente('João Silva', 1000);
 contaJoao.depositar(500);
 contaJoao.sacar(2000);
 contaJoao.sacar(1000);
+}
+banco();
