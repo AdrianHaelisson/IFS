@@ -42,12 +42,12 @@ export class Cachorro extends Animal {
   fazerSom(): void {
     console.log("Au au!");
   }
-  apresentar(): void {
+  public apresentar(): void {
     console.log(
       `O cachorro se chama ${this.nome}, tem ${this.idade} anos, da raça ${this._raca}, pesa ${this._peso}kg e tem a cor ${this._cor}`
     );
   }
-  farejar(): void {
+  public farejar(): void {
     console.log(`${this.nome} está farejando algo...`);
   }
 }

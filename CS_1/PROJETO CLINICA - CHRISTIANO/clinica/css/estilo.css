@@ -1,0 +1,33 @@
+body {
+  margin: 0rem;
+}
+
+header {
+  background-color: #86e986;
+}
+
+nav {
+  background-color: #4fc24f;
+}
+
+.bg-verde {
+  background-color: #86e986;
+}
+
+.painelMedico {
+  border: solid 2px gray;
+  width: 300px;
+  text-align: center;
+  display: inline-block;
+}
+
+.painelMedico img {
+  max-width: 100%;
+}
+
+footer {
+  background-color: #4fc24f;
+  text-align: center;
+  padding: 10px;
+  color: aliceblue;
+}

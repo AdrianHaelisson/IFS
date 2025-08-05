@@ -1,4 +1,4 @@
-export class Animal {
+export class Animal implements AnimalInterface {
   private _nome: string;
   private _idade: number;
 
@@ -26,3 +26,5 @@ export class Animal {
     console.log(`Este animal se chama ${this._nome} e tem ${this._idade} anos`);
   }
 }
+
+interface AnimalInterface {}

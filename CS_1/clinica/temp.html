@@ -1,0 +1,30 @@
+<style>
+    label {
+        width: 140px;
+        display: inline-block;
+    }
+</style>
+
+<h2>Testando Tags</h2>
+
+<form action="api/usuarios" method="POST">
+    <label for="usuario">Usuário:</label> <input type="text" name="usuario" id="usuario"><br>
+    <label for="senha">Senha:</label> <input type="password" name="senha" id="senha"><br>
+    <label for="dataNasc">Data de Nascimento:</label>
+    <input type="date" name="dataNasc" id="dataNasc"><br>
+    E-mail: <input type="email" name="email"><br>
+    Cor de fundo: <input type="color" name="corFundo"><br>
+    Gênero: <br>
+    <input type="radio" name="genero" value="homem" checked>Homem<br>
+    <input type="radio" name="genero" value="mulher">Mulher<br>
+    <input type="radio" name="genero" value="outro">Outro / prefiro não informar<br>
+    Preferência: <br>
+    <input type="checkbox" name="preferencia" value="homem">Homem<br>
+    <input type="checkbox" name="preferencia" value="mulher">Mulher<br>
+    <input type="checkbox" name="preferencia" value="outro">Outro<br>
+    <input type="hidden" name="afiliado" value="Carlos">
+
+    <input type="file" name="foto"><br>
+
+    <input type="submit" value="Enviar">
+</form>

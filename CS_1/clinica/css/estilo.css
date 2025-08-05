@@ -1,0 +1,10 @@
+div { 
+    border: solid 2px gray;
+    width: 300px;
+    text-align: center;
+    display: inline-block;
+}
+
+div img {
+    max-width: 100%;
+}
