@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contato - Rant</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1 class="rant-logo">Rant</h1>
+        <nav>
+          <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="sobre.html">Sobre Mim</a></li>
+            <li><a href="tecnologia.html">Tecnologia</a></li>
+            <li><a href="vida_trabalho.html">Vida & Trabalho</a></li>
+            <li><a href="contato.html">Contato</a></li>
+            <li><a href="recursos.html">Recursos</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="contact-form">
+        <h2>Entre em Contato</h2>
+        <p>
+          Tem alguma pergunta, sugestão de post ou gostaria de discutir uma
+          parceria? Preencha o formulário abaixo!
+        </p>
+        <form action="#" method="post">
+          <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="assunto">Assunto:</label>
+            <select id="assunto" name="assunto">
+              <option value="sugestao">Sugestão de Post</option>
+              <option value="parceria">Parceria</option>
+              <option value="feedback">Feedback Geral</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="mensagem">Mensagem:</label>
+            <textarea
+              id="mensagem"
+              name="mensagem"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" class="submit-button">Enviar Mensagem</button>
+        </form>
+      </section>
+
+      <section class="contact-info">
+        <h3>Outras Formas de Contato</h3>
+        <p>Você também pode me encontrar em @haelisson.adrian.</p>
+        <img
+          src="https://i.imgflip.com/10v291.jpg"
+          alt="Meme de Macaco Pensativo"
+          class="contact-meme"
+        />
+      </section>
+
+      <section class="comment-policy">
+        <h3>Política de Comentários</h3>
+        <p>
+          Seus comentários são bem-vindos e encorajados! No entanto, pedimos que
+          mantenham um tom respeitoso e construtivo. Comentários ofensivos, spam
+          ou que violem as leis serão removidos.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Rant. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+  </body>
+</html>
