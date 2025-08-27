@@ -7,8 +7,8 @@ class Produto {
         this.preco = preco;
     }
     desconto(porcentagem) {
-        const desconto = this.preco - this.preco * porcentagem;
-        return desconto;
+        const valorDesconto = this.preco * (porcentagem / 100);
+        this.preco -= valorDesconto;
     }
 }
 exports.Produto = Produto;
