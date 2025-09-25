@@ -18,7 +18,7 @@ export function filtrarPorPrecoMaximo(
   max: number
 ) {
   // TODO: retorne apenas produtos com preco <= max
-  return produtos.filter(produto => produto.preco >= max)
+  return produtos.filter(produto => produto.preco <= max)
 }
 
 export function totalDoCatalogo(

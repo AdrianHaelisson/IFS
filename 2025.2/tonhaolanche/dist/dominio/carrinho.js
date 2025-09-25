@@ -7,7 +7,7 @@ export class Carrinho {
         const existente = this.itens.find(i => i.produtoId === item.produtoId);
         if (existente) {
             // TODO: somar quantidades
-            existente.quantidade; /* preencha aqui */
+            existente.quantidade += item.quantidade;
         }
         else {
             // Inserir cópia para evitar mutações externas
@@ -16,7 +16,7 @@ export class Carrinho {
     }
     remover(produtoId) {
         // TODO: remover pelo produtoId (filtrando)
-        /* preencha aqui */
+        this.itens.filter(item => item.produtoId !== produtoId);
     }
     listar() {
         // Retornar cópias para proteger o estado interno
@@ -24,7 +24,7 @@ export class Carrinho {
     }
     total() {
         // TODO: somatório de preco * quantidade
-        return; /* preencha aqui */
+        return this.itens.reduce((acumulador, item) => acumulador + (item.preco * item.quantidade), 0);
     }
     limpar() {
         this.itens = [];

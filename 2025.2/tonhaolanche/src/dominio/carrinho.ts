@@ -13,7 +13,7 @@ export class Carrinho {
     const existente = this.itens.find(i => i.produtoId === item.produtoId);
     if (existente) {
       // TODO: somar quantidades
-      existente.quantidade += item.quantidade/* preencha aqui */ 
+      existente.quantidade += item.quantidade
     } else {
       // Inserir cópia para evitar mutações externas
       this.itens.push({ ...item });
@@ -22,7 +22,8 @@ export class Carrinho {
 
   remover(produtoId: number): void {
     // TODO: remover pelo produtoId (filtrando)
-     /* preencha aqui */
+  this.itens.filter(item => item.produtoId !== produtoId)
+    
   }
 
   listar(): ItemCarrinho[] {
@@ -32,7 +33,7 @@ export class Carrinho {
 
   total(): number {
     // TODO: somatório de preco * quantidade
-    return /* preencha aqui */
+    return this.itens.reduce((acumulador, item) => acumulador + (item.preco * item.quantidade), 0)
   }
 
   limpar(): void {

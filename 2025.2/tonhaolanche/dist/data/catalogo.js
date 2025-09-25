@@ -7,13 +7,14 @@ export const catalogo = [
 // Funções utilitárias do catálogo (exercitam arrays/objetos)
 export function listarNomesProdutos(produtos) {
     // TODO: retorne um array com apenas os nomes
-    return; /* preencha aqui */
+    return produtos.map((produto => produto.nome));
 }
 export function filtrarPorPrecoMaximo(produtos, max) {
     // TODO: retorne apenas produtos com preco <= max
-    return; /* preencha aqui */
+    return produtos.filter(produto => produto.preco <= max);
 }
 export function totalDoCatalogo(produtos) {
     // TODO: some todos os preços
-    return; /* preencha aqui */
+    const total = produtos.reduce((total, produto) => total += produto.preco, 0);
+    return total;
 }

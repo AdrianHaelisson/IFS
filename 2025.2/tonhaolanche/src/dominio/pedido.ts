@@ -9,9 +9,9 @@ export enum StatusPedido {
 
 export function avancarStatus(atual: StatusPedido): StatusPedido {
   // TODO: avançar a máquina de estados até Concluido
-  if (atual === StatusPedido.Pendente) return /* preencha aqui */ 
-  if (atual === StatusPedido.EmPreparacao) return /* preencha aqui */ 
-  if (atual === StatusPedido.Pronto) return /* preencha aqui */ 
+  if (atual === StatusPedido.Pendente) return 1 /* preencha aqui */ 
+  if (atual === StatusPedido.EmPreparacao) return 2 /* preencha aqui */ 
+  if (atual === StatusPedido.Pronto) return 3 /* preencha aqui */ 
   return StatusPedido.Concluido;
 }
 
@@ -41,6 +41,6 @@ export class Pedido {
 
   avancar(): void {
     // TODO: atualizar this.status usando avancarStatus
-    this.status = /* preencha aqui */
+    this.status = avancarStatus(this.status) /* preencha aqui */
   }
 }
