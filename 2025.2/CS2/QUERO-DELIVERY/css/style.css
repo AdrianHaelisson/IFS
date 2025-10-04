@@ -5,7 +5,8 @@
 
 :root{
     --bg-primary: #9b4dee;
-    --color-primary: #fff
+    --color-primary: #fff;
+    --border-gray: 1px solid #999;
 }
 
 header{
@@ -35,4 +36,82 @@ nav a{
     padding-top: 10px;
     padding-bottom: 10px;
     
+}
+
+main { 
+    padding-top: 56px; 
+    padding-bottom: 56px; 
+}
+
+h2{
+    color: var(--bg-primary);
+    padding: 7px;
+}
+
+
+img{
+    max-width: 100%;
+    height: auto;
+}
+
+.form-busca{
+    border: var(--border-gray);
+    border-radius: 5px;
+    margin: 0px 7px;
+    padding: 5px;
+}
+.input-busca{
+    width: calc(100% - 50px);
+    border: none;
+}
+.form-busca button{
+    border: none;
+    background-color: transparent;
+}
+.div-estabelecimento{
+    border: var(--border-gray);
+    border-radius: 25px;
+    margin: 3px;
+    overflow: hidden;
+    width: 31%;
+    display: inline-block;
+    text-align: center;
+    
+}
+.div-estabelecimento * {
+    display: block;
+}
+
+.div-estabelecimento div{
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+}
+.div-estabelecimento span{
+    color: #e1bc38;
+}
+
+
+.div-produto{
+    border: var(--border-gray);
+    border-radius: 25px;
+    margin: 3px;
+    overflow: hidden;
+    width: 31%;
+    display: inline-block;
+    text-align: center;
+    
+}
+.div-produto * {
+    display: block;
+}
+
+.div-produto div{
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100%;
 }
