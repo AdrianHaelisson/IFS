@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carrinho – Estilo Mercado Livre</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__bar">
+      <div class="header__logo"><a href="#" aria-label="Página inicial">Mercado Livre</a></div>
+      <form class="search" role="search" aria-label="Buscar produtos">
+        <input type="search" placeholder="Buscar produtos, marcas e muito mais..." aria-label="Buscar" />
+        <button type="submit">Buscar</button>
+      </form>
+      <nav class="header__helper" aria-label="Atalhos">
+        <a href="#">Ofertas</a>
+        <a href="#">Histórico</a>
+        <a href="#">Ajuda</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <!-- Coluna esquerda: lista de itens -->
+      <section class="card cart" aria-label="Itens no carrinho">
+        <div class="cart__header">
+          <h1>Resumo do carrinho</h1>
+          <button id="btn-add-random" class="btn btn--add" type="button">Adicionar item aleatório</button>
+        </div>
+        <div id="cart">
+            <!-- Item 1 -->
+            <article class="cart-item"  role="region" aria-label="Item 1">
+              <div class="cart-item__thumb">
+                <img src="https://via.placeholder.com/120x120.png?text=IMG" alt="Foto do produto" />
+              </div>
+              <div class="cart-item__info">
+                <h2 class="cart-item__title">Fone Bluetooth Over‑Ear com Cancelamento de Ruído</h2>
+                <div class="cart-item__actions">
+                  <label class="qty" for="qty-1">Qtd.
+                    <input id="qty-1" name="qty-1" list="qty-options-1" type="number" value="1" aria-label="Quantidade do produto 1" />
+                  </label>
+                  <button class="link" type="button">Remover</button>
+                </div>
+              </div>
+              <div class="cart-item__price">
+                <div class="price">R$ 299,90</div>
+              </div>
+            </article>
+        </div>
+      </section>
+
+      <!-- Coluna direita: resumo -->
+      <aside class="card summary" aria-label="Resumo da compra">
+        <div class="summary__body">
+          <div class="row"><span>Produtos (<span id="qtd-itens">0</span> itens)</span></div>
+          <hr />
+          <div class="row total"><span>Total</span><span id="total">R$ 757,80</span></div>
+        </div>
+        <div class="summary__cta">
+          <button class="btn btn--primary" type="button">Comprar agora</button>
+          <button class="btn btn--ghost" type="button">Continuar comprando</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model escola {
+  id_escola     Int       @id @default(autoincrement())
+  codigo_mec    Int?
+  nome          String?   @db.VarChar(250)
+  data_fundacao DateTime? @db.Timestamp(6)
+  email         String?   @db.VarChar(100)
+  numero        String?   @db.VarChar(20)
+  complemento   String?   @db.VarChar(100)
+  bairro        String?   @db.VarChar(100)
+  cep           String?   @db.VarChar(11)
+  municipio     String?   @db.VarChar(100)
+  data_cadastro DateTime  @default(now()) @db.Timestamp(6)
+}

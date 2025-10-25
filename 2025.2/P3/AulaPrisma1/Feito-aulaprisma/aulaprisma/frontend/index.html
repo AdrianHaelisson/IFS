@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projeto Escolas</title>
+  <style>
+    :root{
+      --bg:#fff;
+      --ink:#2b2b2b;
+      --muted:#6f6f6f;
+      --surface:#f7f5fb;
+      --accent:#7e57c2;
+      --accent-strong:#6a3ac7;
+      --radius:14px;
+      --shadow:0 8px 24px rgba(0,0,0,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;color:var(--ink);
+      font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:linear-gradient(180deg,#fafafa,#f3f3f3);
+    }
+    .card{
+      width: 310px;background: var(--bg);border-radius: var(--radius);
+      box-shadow: var(--shadow);overflow: hidden;border: 1px solid #e9e9e9;
+      transition: box-shadow .3s ease;
+    }
+    .card__art{display:flex;justify-content:center;align-items:center;height:110px;background:#e6e6e6;position:relative;overflow:hidden}
+    .card__star{position:absolute;top:10px;right:10px;width:26px;height:26px;display:grid;place-items:center;background:rgba(255,255,255,.85);border-radius:8px;border:1px solid rgba(0,0,0,.06);cursor:pointer}
+    .card__star svg{width:16px;height:16px;fill:#9e9e9e}
+    .card__icon{width:92%;height:92%;object-fit:contain;opacity:.9;filter:grayscale(1);transition:filter .3s ease}
+    .card:hover{box-shadow:0 10px 28px rgba(126,87,194,.55)}
+    .card:hover .card__icon{filter:none}
+    .card__body{padding:14px 16px 12px}
+    .card__title{margin:0 0 8px 0;font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase}
+    .card__addr{display:flex;gap:8px;align-items:flex-start;color:var(--muted);font-size:12px}
+    .card__addr svg{flex:0 0 16px;margin-top:2px;fill:#7a7a7a}
+    .card__actions{display:flex;justify-content:space-between;gap:8px;padding:12px 16px 16px;border-top:1px solid #eee}
+    .btn-link{appearance:none;border:0;background:none;cursor:pointer;font-weight:700;letter-spacing:.3px;text-transform:uppercase;font-size:12px;padding:6px 0}
+    .btn-link--primary{color:var(--accent)} .btn-link--ghost{color:#8b8b8b}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    .sidebar{background:linear-gradient(180deg,var(--accent-strong), #8e6be9);color:#fff;padding:24px 18px;display:flex;flex-direction:column;gap:24px}
+    .avatar{display:flex;flex-direction:column;align-items:center;gap:10px}
+    .avatar img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.65);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .avatar strong{font-weight:700;letter-spacing:.3px}
+    .nav{display:flex;flex-direction:column;gap:8px}
+    .nav__item{color:#f0eaff;text-decoration:none;font-weight:600;padding:10px 12px;border-radius:10px;display:block}
+    .nav__item:hover,.nav__item.active{background:rgba(255,255,255,.12)}
+    .content{padding:28px}
+    .page-head h1{margin:0 0 16px 0;font-size:28px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+        row-gap:20px;column-gap:23px;}
+    .logo img{width:230px;height:auto;display:block;margin-top: -10px;}
+    .cards-controls {
+        display: flex; align-items: center; gap: 12px;
+        margin: 16px 0;
+      }
+    .cards-controls button:disabled { opacity: .5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="duca2.png"  />
+      </div>
+      <div class="avatar">
+        <img src="student.jpg" alt="Usuário" />
+        <strong>Danilo</strong>
+      </div>
+      <nav class="nav">
+        <a href="index.html" class="nav__item active">Escolas</a>
+        <a href="manifestacao.html" class="nav__item">Manifestações</a>
+        <a href="#" class="nav__item">Sobre</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="page-head">
+        <h1>Escolas</h1>
+      </header>
+      <section class="cards-controls">
+        <button id="btnAnterior" type="button">Anterior</button>
+        <span id="lblPagina">Página 1</span>
+        <button id="btnProxima" type="button">Próxima</button>
+      </section>
+      <section class="cards" id="cards"></section>
+    </main>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  // Configuração básica
+  const API_BASE = "http://localhost:8081/api"; // ajuste se necessário
+  const LIMIT = 12; // quantos cards por página
+  let offset = 0;   // controle de paginação simples
+  let paginaAtual = 1;     // contador de páginas
+  let ultimoLoteTamanho = 0; // para saber se há próxima página
+
+  // Função utilitária para montar o texto do endereço
+  function formatEndereco(e) {
+    // Campos disponíveis: nome, municipio, bairro, numero, complemento, cep
+    const partes = [];
+    if (e.municipio) partes.push(e.municipio);
+    if (e.bairro) partes.push(e.bairro);
+    // Número + complemento na mesma parte, se houver
+    const numComp = [e.numero, e.complemento].filter(Boolean).join(", ");
+    if (numComp) partes.push(numComp);
+    if (e.cep) partes.push("CEP: " + e.cep);
+    return partes.join(" · ");
+  }
+
+  // Template do card (HTML)
+  function cardHTML(e) {
+    return `
+      <article class="card" aria-label="${e.nome ?? "Escola"}">
+        <div class="card__art">
+          <img class="card__icon" src="escola_icon.png" alt="Ícone de escola" />
+        </div>
+        <div class="card__body">
+          <h2 class="card__title">${e.nome ?? "Sem nome"}</h2>
+          <p class="card__addr">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+            ${formatEndereco(e)}
+          </p>
+        </div>
+        <div class="card__actions">
+          <button class="btn-link btn-link--primary" data-id="${e.id_escola}" data-action="manifestacao">Manifestação</button>
+          <button class="btn-link btn-link--ghost" data-id="${e.id_escola}" data-action="detalhes">Detalhes</button>
+        </div>
+      </article>
+    `;
+  }
+
+  // Busca na API
+  async function fetchEscolas(limit = LIMIT, off = 0) {
+    // Endpoint conforme suas rotas: GET /api/escolas?limit=&offset=
+    const url = `${API_BASE}/escolas`;
+    const { data } = await axios.get(url, { params: { limit, offset: off } });
+    return data; // array de EscolaRow
+  }
+
+  // Renderização dos cards
+  async function renderCards() {
+    const container = document.getElementById("cards");
+    // Estado de carregamento
+    container.innerHTML = `<p style="color:#6f6f6f">Carregando escolas...</p>`;
+    try {
+      const escolas = await fetchEscolas(LIMIT, offset);
+      ultimoLoteTamanho = Array.isArray(escolas) ? escolas.length : 0;
+      if (!Array.isArray(escolas) || escolas.length === 0) {
+        container.innerHTML = `<p style="color:#6f6f6f">Nenhuma escola encontrada.</p>`;
+        return;
+      }
+      container.innerHTML = escolas.map(cardHTML).join("");
+      atualizarControles();
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<p style="color:#b00020">Erro ao carregar escolas.</p>`;
+    }
+  }
+
+    // Atualiza estado visual dos botões
+  function atualizarControles() {
+    const lbl = document.getElementById("lblPagina");
+    const btnAnt = document.getElementById("btnAnterior");
+    const btnProx = document.getElementById("btnProxima");
+
+    lbl.textContent = `Página ${paginaAtual}`;
+    btnAnt.disabled = offset <= 0;
+    // Se o último lote veio com menos itens que o LIMIT, não há próxima
+    btnProx.disabled = ultimoLoteTamanho < LIMIT;
+  }
+
+    // Eventos dos botões
+  document.getElementById("btnProxima").addEventListener("click", () => {
+    // Só avança se o último lote veio cheio
+    if (ultimoLoteTamanho >= LIMIT) {
+      offset += LIMIT;
+      paginaAtual += 1;
+      renderCards();
+    }
+  });
+
+  document.getElementById("btnAnterior").addEventListener("click", () => {
+    if (offset >= LIMIT) {
+      offset -= LIMIT;
+      paginaAtual = Math.max(1, paginaAtual - 1);
+      renderCards();
+    }
+  });
+
+  // Paginação simples (opcional): Exemplo de listeners
+  // Você pode criar botões "Anterior" e "Próxima" na página e usar:
+  // document.getElementById("btnProxima").addEventListener("click", () => { offset += LIMIT; renderCards(); });
+  // document.getElementById("btnAnterior").addEventListener("click", () => { offset = Math.max(0, offset - LIMIT); renderCards(); });
+
+  // Inicializa
+  renderCards();
+</script>
+</body>
+</html>

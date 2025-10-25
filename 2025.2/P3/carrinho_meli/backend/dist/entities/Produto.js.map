@@ -1,0 +1,1 @@
+{"version":3,"file":"Produto.js","sourceRoot":"","sources":["../../src/entities/Produto.ts"],"names":[],"mappings":"","sourcesContent":["export interface Produto {\r\n    id: number;\r\n    titulo: string;\r\n    preco: number;\r\n    img: string\r\n    qty: number;\r\n}"]}
