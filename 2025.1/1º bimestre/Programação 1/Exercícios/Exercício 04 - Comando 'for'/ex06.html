@@ -1,0 +1,22 @@
+<script>
+    //06. Escreva um programa que receba dois números inteiros positivos A e B. Em seguida, informe se A e B são "primos entre si" ou não (dois números são primos entre si se o máximo divisor comum deles é 1).//
+
+    let a = Number(prompt('Insira o valor de A'))
+    let b = Number(prompt('Insira o valor de B'))
+
+    let menor = (a < b ? a : b);
+    let saoPrimos = true;
+
+    for (let i = 2; i <= menor; i++) {
+        if (a % i == 0 && b % i == 0) {
+            saoPrimos = false
+            break;
+        }
+    }
+
+    if(saoPrimos){
+        alert('Os números são primos entre si')
+    }else{
+        alert('Os números NÃO são primos entre si')
+    }
+</script>

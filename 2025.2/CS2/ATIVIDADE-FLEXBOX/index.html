@@ -1,0 +1,50 @@
+<!--
+    Pergunta-Chave 1 (Conceitual): O justify-content e o align-items foram essenciais para alinhar os itens do menu de navegação. O justify-content foi usado para distribuir o espaço entre o logotipo e os links, enquanto o align-items garantiu o alinhamento vertical. Para forçar os links para o lado oposto do logotipo, utilizei a propriedade justify-content: space-between.
+
+    Pergunta-Chave 2 (Resolução de Problemas): A maior dificuldade foi centralizar o formulário de login tanto vertical quanto horizontalmente. A combinação de `display: flex`, `justify-content: center`, e `align-items: center` no container principal resolveu o problema, garantindo um alinhamento perfeito.
+
+    Pergunta-Chave 3 (Aplicação Prática): Com Flexbox, a organização em colunas do rodapé foi simples, usando `display: flex` e `justify-content: space-around`. Com `float`, seria necessário usar `float: left` em cada coluna, definir larguras percentuais e adicionar um "clearfix" para evitar que os elementos seguintes quebrassem o layout, tornando o código mais complexo e menos robusto.
+-->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zetha - Camisas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">Zetha - Camisas</div>
+        <nav class="main-nav">
+            <a href="#">Cursos</a>
+            <a href="#">Produtos</a>
+            <a href="#">Sobre Nós</a>
+            <a href="#">Contato</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <form class="quote-form">
+            <h2>Solicite um Orçamento</h2>
+            <input type="text" placeholder="Nome" required>
+            <input type="email" placeholder="Email" required>
+            <input type="text" placeholder="Curso" required>
+            <input type="number" placeholder="Quantidade" required>
+            <button type="submit">Enviar</button>
+        </form>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-col">
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos e Serviços</a>
+        </div>
+        <div class="footer-col">
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">LinkedIn</a>
+        </div>
+    </footer>
+</body>
+</html>

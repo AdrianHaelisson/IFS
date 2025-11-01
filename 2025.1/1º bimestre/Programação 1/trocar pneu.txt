@@ -1,0 +1,41 @@
+Vá para o acostamento;
+Pare o carro;
+Ligue o pisca-alerta;
+Abra o porta-malas;
+Abra a porta do carro;
+Vá em direção ao porta-malas;
+Levante a porta do porta-malas;
+Verifique se o estepe está cheio;
+SE o estepe estiver cheio ENTÃO
+    Pegue o triangulo;
+    Coloque o triangulo a 30 metros;
+    Volte até o porta-malas;
+    Pegue o macaco;
+    Pegue a chave de roda;
+    Folgue os parafusos da roda com a chave de roda;
+    Coloque o macaco embaixo do carro no local adequado;
+    Erga o carro com o macaco;
+    Retire os parafusos com a chave de roda;
+    Retire o pneu furado;
+    Vá ao porta-malas;
+    Pegue o pneu estepe;
+    Coloque o estepe no lugar do pneu furado;
+    Colocar os parafusos no lugar;
+    Aperte um pouco os parafusos;
+    Abaixe o carro;
+    Retire o macaco;
+    Aperte bem os parafusos;
+    Guarde o macaco no porta-malas;
+    Guarde a chave de roda no porta-malas;
+    Guarde o pneu furado no porta-malas;
+    Recolha o triangulo;
+    Guarde o triangulo no porta-malas;
+    Feche a porta do porta-malas;
+    Entre no carro;
+    Feche a porta do carro;
+    Coloque o cinto de segurança;
+    Ligue o carro com a chave;
+    Acelere;
+SENÃO
+    Ligue para o guincho;
+

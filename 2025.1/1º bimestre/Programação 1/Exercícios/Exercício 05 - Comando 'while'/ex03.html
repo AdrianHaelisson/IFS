@@ -1,0 +1,17 @@
+<script>
+    //03. Escreva um programa que receba continuamente números inteiros e informe se cada número é par ou ímpar. O programa deve ser encerrado quando o valor zero (0) for digitado.//
+    
+    let numero;
+
+    while (numero !== 0) {
+        numero = Number(prompt('Insira um número (Digite 0 para sair)'))
+        if (numero == 0){
+            alert('Programa encerrado')
+        } else if(numero % 2 == 0) {
+            alert('O número é par')
+        }else{
+            alert('O número é impar')
+        }
+    }
+    
+</script>

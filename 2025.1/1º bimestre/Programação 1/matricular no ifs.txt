@@ -1,0 +1,29 @@
+Pegar número de inscrição do aluno;
+Pegar documento de identidade;
+Pegar comprovante de residência;
+Pegar histórico escolar;
+Pegar foto 3x4;
+SE documentação estiver certa ENTÃO
+    Verificar se já é aluno;
+    SE não foi aluno ainda ENTÃO
+        Abrir formulário com dados do aluno no SIGAA;
+        Preencher os dados do aluno;
+        Submeter o formulário;
+        Abrir formulário de cadastro de aluno no SIGAA;
+        Preencher os dados do aluno;
+        Submeter o formulário;
+        Emitir comprovante de matrícula;
+    SE já foi aluno ENTÃO
+        Abrir formulário de cadastro de aluno no SIGAA;
+        Preencher os dados do aluno;
+        Submeter o formulário;
+        Emitir comprovante de matrícula;
+    SE ainda é aluno em outro curso ENTÃO
+        Desativar a matrícula antiga;
+        brir formulário de cadastro de aluno no SIGAA;
+        Preencher os dados do aluno;
+        Submeter o formulário;
+        Emitir comprovante de matrícula;
+    SENÃO  
+        Informar problemas da documentação;
+

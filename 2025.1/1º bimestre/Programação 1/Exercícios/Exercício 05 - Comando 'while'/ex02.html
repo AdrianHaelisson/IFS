@@ -1,0 +1,15 @@
+<script>
+    //02. Escreva um programa que receba 10 números inteiros positivos e, depois, informe quantos desses números tinham como último o algarismo o dígito 3.//
+    let i = 1
+    let contador = 0
+
+    while(i <= 10 && i > 0){
+        let numero = Number(prompt(`Insira o ${i}º número`))
+        i++
+        if (numero % 10 == 3){
+            contador++
+        }
+    }
+    alert(`Quantidade de números que terminam em 3 são: ${contador}`)
+
+</script>

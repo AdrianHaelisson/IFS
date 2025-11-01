@@ -1,19 +1,19 @@
-import { prisma } from "../prisma.js";
-import type { IEscola } from "../entities/IEscola.js";
+import { prisma } from "../prisma.js"
+import type { IEscola } from "../entities/IEscola.js"
 
 export class EscolaRepository {
   constructor(private db = prisma) {}
 
-  async listar(limit = 50, offset = 0, query: string): Promise<IEscola[]> {
+  async listar(limit = 50, offset = 0, query:string): Promise<IEscola[]> {
     const rows = await this.db.$queryRaw<IEscola[]>`
       SELECT id_escola, codigo_mec, nome, data_fundacao, email,
              numero, complemento, bairro, cep, municipio, data_cadastro
       FROM public.escola
-      WHERE nome ILIKE ${"%" + query + "%"}
+      WHERE nome ILIKE ${'%' + query + '%'}
       ORDER BY id_escola
       LIMIT ${limit} OFFSET ${offset};
-    `;
-    return rows;
+    `
+    return rows
   }
 
   async buscarPorId(id: number): Promise<IEscola | null> {
@@ -22,8 +22,8 @@ export class EscolaRepository {
              numero, complemento, bairro, cep, municipio, data_cadastro
       FROM public.escola
       WHERE id_escola = ${id};
-    `;
-    return rows[0] ?? null;
+    `
+    return rows[0] ?? null
   }
 
   async criar(data: Partial<IEscola>): Promise<IEscola> {
@@ -37,8 +37,8 @@ export class EscolaRepository {
          ${data.bairro}, ${data.cep}, ${data.municipio}, NOW())
       RETURNING id_escola, codigo_mec, nome, data_fundacao, email,
                 numero, complemento, bairro, cep, municipio, data_cadastro;
-    `;
-    return rows[0];
+    `
+    return rows[0]
   }
 
   async atualizar(id: number, data: Partial<IEscola>): Promise<IEscola> {
@@ -57,13 +57,13 @@ export class EscolaRepository {
       WHERE id_escola = ${id}
       RETURNING id_escola, codigo_mec, nome, data_fundacao, email,
                 numero, complemento, bairro, cep, municipio, data_cadastro;
-    `;
-    return rows[0];
+    `
+    return rows[0]
   }
 
   async deletar(id: number): Promise<void> {
     await this.db.$executeRaw`
       DELETE FROM public.escola WHERE id_escola = ${id};
-    `;
+    `
   }
 }

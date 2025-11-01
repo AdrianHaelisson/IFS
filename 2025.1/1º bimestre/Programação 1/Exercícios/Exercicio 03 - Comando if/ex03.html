@@ -1,0 +1,93 @@
+<script>
+/* QUESTÃO 1 
+    let num1 = Number(prompt('Digite um número:'))
+    let num2 = Number(prompt('Digite outro numero:'))
+    if (num1 > num2){
+        alert(`${num1} é o maior número`)
+    }else{
+        alert(`${num2} é o maior número`)
+    } */
+
+/* QUESTÃO 2
+   let votosMaca = Number(prompt('Digite o total de votos para maçã:'))
+   let votosPera = Number(prompt('Digite o total de votos para pêra:'))
+
+   if (votosMaca > votosPera){
+    alert(`Houve um total de ${votosMaca} votos e a maçã foi a vencedora!`)
+   }else if (votosPera > votosMaca){
+    alert(`Houve um total de ${votosPera} votos e a pêra foi a vencedora!`)
+   }else if (votosMaca == votosPera){
+    alert(`Houve um total de ${votosMaca} votos e maçã e pêra empataram!`)
+   }*/
+
+/* QUESTÃO 3
+  let notaPortugues1 = Number(prompt('Digite a 1ª nota de português:'))
+  let notaPortugues2 = Number(prompt('Digite a 2ª nota de português:'))
+  let mediaPortugues = (notaPortugues1+notaPortugues2)/2
+
+  let notaMatematica1 = Number(prompt('Digite a 1ª nota de matemática:'))
+  let notaMatematica2 = notaMatematica1 = Number(prompt('Digite a 2ª nota de matemática:'))
+  let mediaMatematica = (notaMatematica1 + notaMatematica2)/2
+
+  if (mediaPortugues >= 6){
+    alert ('Aluno aprovado em Português!')
+  }else{
+    alert('Aluno reprovado em Português!')
+  }
+  if (mediaMatematica >= 6){
+    alert('Aluno aprovado em Matemática!')
+  }else{
+    alert('Aluno reprovado em Matemática!')
+  }*/
+/* QUESTÃO 4 
+let notaPortugues = Number(prompt('Digite a sua nota em Português:'))
+let notaMatematica = Number(prompt('Digite a sua nota em Matemática:'))
+
+if (notaPortugues > notaMatematica){
+    alert('Sua maior nota foi em Português!')
+}else if (notaMatematica > notaPortugues){
+    alert('Sua maior nota foi em Matemática!')
+}else if (notaMatematica == notaPortugues){
+    alert('Você tirou a mesma nota em ambas')
+}*/
+
+let number1 = Number(prompt('Digite o 1º número:'))
+let number2 = Number(prompt('Digite o 2º número:'))
+let number3 = Number(prompt('Digite o 3º número:'))
+let menor 
+let meio
+let maior
+
+
+if (number1 <= number2 && number1 <= number3) {
+    menor = number1;
+    if (number2 <= number3) {
+        meio = number2;
+        maior = number3;
+    } else {
+        meio = number3;
+        maior = number2;
+    }
+} else if (number2 <= number1 && number2 <= number3) {
+    menor = number2;
+    if (num1 <= number3) {
+        meio = number1;
+        maior = number3;
+    } else {
+        meio = number3;
+        maior = number1;
+    }
+} else {
+    menor = number3;
+    if (num1 <= number2) {
+        meio = number1;
+        maior = number2;
+    } else {
+        meio = number2;
+        maior = number1;
+    }
+}
+
+alert(`Menor: ${menor}; Meio: ${meio}; Maior: ${maior}`);
+
+</script>

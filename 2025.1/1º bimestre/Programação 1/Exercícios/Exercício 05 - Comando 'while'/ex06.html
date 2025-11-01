@@ -1,0 +1,20 @@
+<script>
+    //06. Escreva um programa que receba as notas de uma turma, contabilizando quantas estão boas (maior ou igual a 6) e quantas estão fracas (menor do que 6,0). Quando o usuário informar uma nota -1, interromper a contagem, mostrar o total de notas boas e fracas e encerrar o programa (exemplo: Foram informadas 6 notas boas e 4 notas fracas)//
+    let nota
+    let notaBoa = 0
+    let notaFraca = 0
+
+    while (nota != -1) {
+        nota = Number(prompt('Digite uma nota:'))
+        if (nota >= 6) {
+            notaBoa++
+        } else if (nota < 6) {
+            notaFraca++
+        } else {
+            alert('Número inválido')
+        }
+    }
+    
+
+    alert(`Foram informadas ${notaBoa} notas boas e ${notaFraca} notas fracas`)
+</script>

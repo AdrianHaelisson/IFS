@@ -1,4 +1,4 @@
-import { query, Request, Response } from "express";
+import { Request, Response } from "express";
 import { EscolaRepository } from "../repositories/escola.repository.js";
 
 export class EscolaController {
@@ -15,5 +15,10 @@ export class EscolaController {
     const busca = String(req.query.busca)
     const escolas = await this.repo.listar(limit, offset, busca)
     res.json(escolas)
-  } 
+  }
+  
+  inserir = async(req: Request, res: Response) => {
+    const escolas = await this.repo.criar(req.body);
+    res.json(escolas)
+  }
 }

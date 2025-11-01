@@ -1,0 +1,20 @@
+<script>
+//07. Escreva um programa que receba um número inteiro positivo N indicando o total de números que será informado. Em seguida, receba os N números e conte quantos são positivos e quantos são negativos. Ao final, informe o total de números positivos e o total de números negativos.//
+
+let n = Number(prompt('Digite o total de números a serem informados'));
+
+let positivos = 0
+let negativos = 0
+
+for(let i = 1; i <= n; i++){
+    let numero = Number(prompt(`Digite o ${i} número`));
+if(numero > 0){
+    positivos++
+}else if (numero < 0){
+    negativos++
+}
+}
+alert(`Total de números positivos: ${positivos}`);
+alert(`Total de números negativos: ${negativos}`);
+
+</script>

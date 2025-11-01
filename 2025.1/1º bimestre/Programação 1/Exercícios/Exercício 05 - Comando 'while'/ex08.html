@@ -1,0 +1,22 @@
+<script>
+    //08. Escreva um programa que escolhe um número aleatório de 0 a 99 ( let secreto = parseInt(Math.random()*100) ). Em seguida, peça ao usuário para escolher um número e informe se o número escolhido é maior, menor ou igual ao número secreto. O usuário continuará escolhendo novos números até acertar o número secreto, quando o programa deve parabenizá-lo e informar quantas tentativas foram necessárias.//
+
+    let secreto = parseInt(Math.random() * 100);
+    let tentativas = 0;
+    let advinhar;
+
+    while (secreto != advinhar) {
+        let advinhar = Number(prompt('Digite um número'));
+        tentativas++;
+        if (advinhar === null || advinhar == NaN || advinhar == 0) {
+            alert('Valor inválido')
+        } else if (secreto < advinhar) {
+            alert('Número secreto é menor')
+        } else if (secreto == advinhar) {
+            alert(`Parabéns, você acertou em ${tentativas} tentativas`)
+        } else if (secreto > advinhar) {
+            alert('Número secreto é maior')
+        }
+    }
+
+</script>

@@ -1,0 +1,19 @@
+<script>
+    
+    let controle = 1;
+    let qtdCarneiros = Number(prompt('Insira a quantidade de carneirinhos a serem contadas'))
+    
+    if(qtdCarneiros <= 0){
+        alert('Valor inválido')
+    }
+    else{
+        while(controle <= qtdCarneiros ){
+            if(controle == 1){
+                alert(`${controle} carneirinho`)
+            }
+            if (controle != 1)alert(`${controle} carneirinhos`)
+            controle ++
+        }
+        }
+
+</script>

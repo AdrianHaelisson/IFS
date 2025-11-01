@@ -1,0 +1,19 @@
+<script>
+    //07. Escreva um programa que receba um número inteiro (de 1 a 10) e em seguida escreva na página a tabuada de multiplicar desse número. Use o comando document.write() com uma tag de quebra de linha "<br>" para escrever na página pulando para a próxima linha ao final, exemplo: document.write("Olá, mundo<br>")//
+    let multiplo = Number(prompt('Digite o número para saber a sua tabuada'));
+    let multiplicador = 1;
+    
+    if(multiplo <= 0){
+        alert('Número inválido')
+    }else if(multiplo > 10){
+        alert('Digite um número menor que 10')
+    }else{
+
+        while(multiplicador <= 10){
+        let resultado = multiplo*multiplicador
+        multiplicador++
+        document.write(`${multiplicador} x ${multiplicador} = ${resultado}<br>`) 
+        }
+    }
+    
+</script>

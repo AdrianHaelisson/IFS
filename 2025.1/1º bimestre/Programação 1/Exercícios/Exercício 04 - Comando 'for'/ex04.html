@@ -1,0 +1,18 @@
+<script>
+    //04. Escreva um programa que receba dois números A e B. Em seguida, mostre todos os números divisíveis por 3 existentes nesse intervalo.//
+
+    let a = Number(prompt("Insira o valor de A"))
+    let b = Number(prompt("Insira o valor de B"))
+
+    let min = a, max = b
+
+    if (a > b) {
+        min = b
+        max = a
+    }
+    for (i = min; i <= max; i++) {
+        if (i % 3 == 0) {
+            alert(i)
+        }
+    }
+</script>

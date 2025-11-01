@@ -1,0 +1,6 @@
+Leia nota1;
+Leia nota2;
+Leia nota3;
+
+media = (nota1 + nota2 + nota3) / 3;
+Imprima media;

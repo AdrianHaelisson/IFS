@@ -1,0 +1,24 @@
+<script>
+    //08. Aumentar ou abaixar os preços? Nossa empresa está em reunião para determinar se deve aumentar ou baixar os preços dos produtos. Para ajudar nisso, escreva um programa que receba os 10 votos dos conselheiros (1 - aumentar os preços; 2 - abaixar os preços). Em caso de empate, o CEO da empresa também votará. Ao final, informe a decisão que mais recebeu votos.//
+    
+    let aumentar = 0
+    let abaixar = 0
+
+    for (i = 1; i <= 6; i++) {
+        voto = Number(prompt('Insira o seu voto'))
+        if (voto == 1) {
+            aumentar++
+        } else if (voto == 2) {
+            abaixar++
+        }
+    }
+    if (aumentar == abaixar) {
+        votoCEO = Number(prompt('Insira o voto de desempate'))
+        if (votoCEO == 1) {
+            aumentar++
+        } else if (votoCEO == 2) {
+            abaixar++
+        }
+    }
+    alert(`Foram ${aumentar} para aumentar os preços e ${abaixar} para reduzir os preços`)
+</script>

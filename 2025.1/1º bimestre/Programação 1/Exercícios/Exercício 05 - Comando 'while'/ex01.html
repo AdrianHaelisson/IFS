@@ -1,0 +1,16 @@
+<script>
+    //01. Escreva um programa que receba 10 números. Ao final, mostre a média dos números informados.//
+    
+    let soma = 0
+    let i = 1
+
+    while(i <= 10){
+        let numero = Number(prompt(`Insira o ${i}º número `))
+        soma += numero;
+        i++;
+    }
+    
+    let media = soma / 10
+    alert(`A média dos números informados é ${media}`)
+
+</script>
