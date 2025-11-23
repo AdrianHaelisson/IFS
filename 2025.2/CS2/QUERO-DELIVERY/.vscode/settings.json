@@ -9,5 +9,6 @@
       ],
       "type": "stdio"
     }
-  }
+  },
+  "liveServer.settings.port": 5501
 }

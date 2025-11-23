@@ -8,4 +8,4 @@ const carrinhoController = new CarrinhoController();
 carrinhorouter.get('/carrinho', carrinhoController.listar);
 carrinhorouter.post('/carrinho', carrinhoController.inserir);
 carrinhorouter.delete('/carrinho/:id', carrinhoController.deletar);
-carrinhorouter.put('/carrinho/:id', negativosAtualizar ,carrinhoController.atualizar);
+carrinhorouter.put('/carrinho/:id', negativosAtualizar, carrinhoController.atualizar);
