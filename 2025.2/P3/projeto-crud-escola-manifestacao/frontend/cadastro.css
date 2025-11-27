@@ -1,0 +1,82 @@
+/* Fundo escurecido ao abrir o dialog */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Caixa principal do dialog */
+#dlg-cadastro, #dlg-atualizar {
+  border: none;
+  border-radius: 12px;
+  padding: 24px;
+  width: min(400px, 90vw);
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Cabeçalho */
+#dlg-cadastro h2, #dlg-atualizar h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Campos */
+#form-cadastro label, #form-atualizar label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+
+#form-cadastro input, #form-atualizar input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+#form-cadastro input:focus, #form-atualizar input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* Botões */
+#form-cadastro button, #form-atualizar button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+#btn-salvar {
+  background: #16a34a;
+  color: white;
+}
+
+#btn-salvar:hover {
+  background: #15803d;
+}
+
+#btn-atualizar {
+  background: #16a34a;
+  color: white;
+}
+
+#btn-atualizar:hover {
+  background: #15803d;
+}
+
+#btn-cancelar {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+#btn-cancelar:hover {
+  background: #d1d5db;
+}
