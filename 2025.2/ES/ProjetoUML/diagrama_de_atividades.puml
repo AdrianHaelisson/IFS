@@ -1,0 +1,40 @@
+@startuml
+' Arquivo: diagrama_de_atividades.puml
+' Diagrama de Atividades para o fluxo de um objeto no sistema de Achados e Perdidos
+
+title Fluxo de um Objeto no Sistema
+
+start
+
+:Objeto é encontrado;
+:Entregue na CRE;
+:Funcionário registra o objeto no sistema;
+
+if (Objeto foi cadastrado com sucesso?) then (sim)
+  :Status do objeto é definido como "AGUARDANDO_RETIRADA";
+  :Objeto fica disponível para consulta no portal público;
+
+  repeat
+    :Aguardar;
+    if (Dono apareceu e comprovou propriedade?) then (sim)
+      :Funcionário registra a devolução;
+      :Status do objeto é alterado para "DEVOLVIDO";
+      :Objeto é entregue ao dono;
+      stop
+    elseif (Passaram 2 meses desde o cadastro?) then (sim)
+      :Sistema identifica o objeto para doação;
+      :Status do objeto é alterado para "AGUARDANDO_DOACAO";
+      :Funcionário é notificado;
+      :Funcionário encaminha o objeto para doação;
+      :Status do objeto é alterado para "DOADO";
+      stop
+    endif
+  repeat while (Objeto não foi retirado nem doado)
+
+else (não)
+  :Funcionário informa o erro;
+  :Tenta registrar novamente;
+  stop
+endif
+
+@enduml

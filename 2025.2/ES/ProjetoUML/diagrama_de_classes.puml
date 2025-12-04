@@ -1,0 +1,59 @@
+@startuml
+' Arquivo: diagrama_de_classes.puml
+' Diagrama de Classes para o Sistema de Achados e Perdidos do IFS
+
+' Definição das classes e seus atributos
+class Objeto {
+  -id: int
+  -descricao: String
+  -foto: String
+  -dataEncontrado: Date
+  -localEncontrado: String
+  +status: StatusObjeto
+  +setStatus(status: StatusObjeto)
+  +getHistorico(): List<Historico>
+}
+
+class Pessoa {
+  -id: int
+  -nome: String
+  -contato: String
+}
+
+class FuncionarioCRE {
+  -matricula: String
+}
+
+class Dono {
+  -observacao: String
+}
+
+class Historico {
+  -data: DateTime
+  -evento: String
+  -descricao: String
+}
+
+enum StatusObjeto {
+  CADASTRADO
+  AGUARDANDO_RETIRADA
+  DEVOLVIDO
+  AGUARDANDO_DOACAO
+  DOADO
+}
+
+' Definição dos relacionamentos
+Pessoa <|-- FuncionarioCRE
+Pessoa <|-- Dono
+
+FuncionarioCRE "1" -- "0..*" Objeto : registra
+Dono "0..1" -- "1" Objeto : é proprietário de
+
+Objeto "1" o-- "1..*" Historico : contém
+Objeto "1" *-- "1" StatusObjeto : possui
+
+' Relacionamento do sistema com o tempo para doação
+note "O sistema deve verificar objetos com status 'AGUARDANDO_RETIRADA' por mais de 2 meses" as N1
+Objeto .. N1
+
+@enduml

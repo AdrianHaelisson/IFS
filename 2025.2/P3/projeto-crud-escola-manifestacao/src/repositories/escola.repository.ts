@@ -1,5 +1,5 @@
 import { prisma } from "../prisma.js"
-import type { IEscola } from "../entities/IEscola.js"
+import type { IEscola, IEscolaComMaisManifestacoes } from "../entities/IEscola.js"
 
 export class EscolaRepository {
   constructor(private db = prisma) {}
@@ -12,6 +12,24 @@ export class EscolaRepository {
       WHERE nome ILIKE ${'%' + query + '%'}
       ORDER BY id_escola
       LIMIT ${limit} OFFSET ${offset};
+    `
+    return rows
+  }
+
+  async findEscolasByMunicipio(municipio: string): Promise<IEscola[]> {
+    const rows = await this.db.$queryRaw<IEscola[]>`
+      SELECT * FROM escola
+      WHERE municipio = ${municipio};
+    `
+    return rows
+  }
+  async getEscolaMaisManifestacao(): Promise<IEscolaComMaisManifestacoes[]> {
+    const rows = await this.db.$queryRaw<IEscolaComMaisManifestacoes[]>`
+      SELECT escola.nome, count(manifestacao.id_manifestacao) total FROM escola
+      inner join manifestacao on manifestacao.id_escola = escola.id_escola
+      group by escola.nome
+      order by total desc
+      limit 1;
     `
     return rows
   }

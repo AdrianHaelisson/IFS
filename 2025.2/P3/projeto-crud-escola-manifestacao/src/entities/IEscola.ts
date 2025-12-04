@@ -10,4 +10,10 @@ export interface IEscola {
     cep: string | null
     municipio: string | null
     data_cadastro: Date | string
+    matriculados?: number | null
+}
+
+export interface IEscolaComMaisManifestacoes {
+    nome: string | null
+    total: number | null
 }

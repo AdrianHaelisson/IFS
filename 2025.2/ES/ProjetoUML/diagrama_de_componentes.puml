@@ -1,0 +1,48 @@
+@startuml
+' Arquivo: diagrama_de_componentes.puml
+' Diagrama de Componentes para o Sistema de Achados e Perdidos
+
+title Diagrama de Componentes
+
+node "Servidor de Aplicação" {
+  component [Portal Web] as Portal
+  component [Sistema de Gestão] as Gestao
+}
+
+database "Banco de Dados" as BD
+
+' Interfaces
+interface IConsulta as IConsulta
+interface IGestao as IGestao
+interface IPersistencia as IPersistencia
+
+' Relacionamentos
+Portal .up.|> IConsulta
+Gestao .up.|> IGestao
+
+Portal ..> IPersistencia
+Gestao ..> IPersistencia
+
+BD .up.|> IPersistencia
+
+' Descrições dos componentes
+note right of Portal
+  **Portal Web Público**
+  - Permite a consulta pública de itens perdidos.
+  - Acesso anônimo.
+end note
+
+note right of Gestao
+  **Sistema de Gestão (CRE)**
+  - Interface para funcionários.
+  - Permite cadastrar, gerenciar,
+    devolver e doar itens.
+end note
+
+note left of BD
+  **Banco de Dados**
+  - Armazena todas as informações
+    sobre objetos, históricos e usuários.
+end note
+
+@enduml

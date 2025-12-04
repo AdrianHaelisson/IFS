@@ -1,0 +1,43 @@
+@startuml
+' Arquivo: diagrama_de_estados.puml
+' Diagrama de Estados para a classe Objeto
+
+title Diagrama de Estados do Objeto
+
+[*] --> Cadastrado : Objeto é registrado
+
+Cadastrado --> AguardandoRetirada : Cadastro validado
+
+AguardandoRetirada --> Devolvido : Dono reivindica e comprova posse
+AguardandoRetirada --> AguardandoDoacao : [ passaram > 2 meses ] / Sistema identifica
+
+AguardandoDoacao --> Doado : Funcionário realiza doação
+
+Devolvido --> [*]
+Doado --> [*]
+
+' Detalhes dos estados
+state Cadastrado {
+  description: O objeto foi entregue e suas 
+ informações iniciais estão sendo inseridas.
+}
+
+state AguardandoRetirada {
+  description: O objeto está cadastrado, disponível para consulta 
+ e aguardando o proprietário.
+}
+
+state AguardandoDoacao {
+  description: O prazo de retirada expirou. 
+ O objeto está na fila para ser doado.
+}
+
+state Devolvido {
+  description: O objeto foi retirado pelo seu dono.
+}
+
+state Doado {
+  description: O objeto foi encaminhado para uma instituição de caridade.
+}
+
+@enduml

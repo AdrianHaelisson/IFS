@@ -1,0 +1,45 @@
+@startuml
+' Arquivo: diagrama_de_sequencia_registrar.puml
+' Diagrama de Sequência para o cenário de "Registrar Objeto Encontrado"
+
+actor "Membro da Comunidade" as Membro
+actor "Funcionário (CRE)" as Funcionario
+participant "Sistema" as Sistema
+database "Banco de Dados" as BD
+
+title Cenário: Registrar um Novo Objeto Encontrado
+
+Membro -> Funcionario: Entrega objeto perdido
+activate Funcionario
+
+Funcionario -> Sistema: Inicia cadastro de objeto
+activate Sistema
+
+Sistema -> Funcionario: Solicita dados do objeto (foto, descrição, local)
+Funcionario -> Sistema: Fornece dados do objeto
+
+Sistema -> Sistema: Valida os dados recebidos
+Sistema -> BD: Cria registro para o objeto (INSERT em Objeto)
+activate BD
+BD --> Sistema: Retorna ID do novo objeto
+deactivate BD
+
+Sistema -> BD: Cria registro de histórico (INSERT em Historico)
+Evento: "Objeto Cadastrado"
+activate BD
+BD --> Sistema: Confirmação
+deactivate BD
+
+Sistema -> Sistema: Atualiza status do objeto para "AGUARDANDO_RETIRADA"
+Sistema -> BD: UPDATE Objeto.status
+activate BD
+BD --> Sistema: Confirmação
+deactivate BD
+
+Sistema --> Funcionario: Exibe mensagem de sucesso no cadastro
+deactivate Sistema
+
+Funcionario --> Membro: Agradece a entrega
+deactivate Funcionario
+
+@enduml

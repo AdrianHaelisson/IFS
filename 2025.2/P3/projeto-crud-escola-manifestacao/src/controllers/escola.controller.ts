@@ -16,6 +16,15 @@ export class EscolaController {
       const escolas = await this.repo.listar(limit, offset, busca)
       res.json(escolas)
     } 
+    findEscolaByMunicipio = async (req: Request, res: Response) => {
+      const municipio = String(req.query.municipio)
+      const escolas = await this.repo.findEscolasByMunicipio(municipio)
+      res.json(escolas)
+    } 
+    getEscolaMaisManifestacao = async (req: Request, res: Response) => {
+      const escolas = await this.repo.getEscolaMaisManifestacao();
+      res.json(escolas)
+    } 
 
     porId = async (req: Request, res: Response) => {
       const id = Number(req.params.id)

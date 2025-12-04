@@ -1,0 +1,39 @@
+@startuml
+' Arquivo: caso_de_uso.puml
+' Diagrama de Caso de Uso para o Sistema de Achados e Perdidos do IFS
+
+left to right direction
+
+actor "Funcionário (CRE)" as Funcionario
+actor "Público" as Publico
+actor "Membro da Comunidade" as Membro ' Aluno ou Servidor
+
+rectangle "Sistema de Achados e Perdidos" {
+  usecase "Registrar Objeto Encontrado" as UC1
+  usecase "Consultar Objetos (Portal)" as UC2
+  usecase "Reivindicar Objeto" as UC3
+  usecase "Registrar Devolução" as UC4
+  usecase "Identificar Itens para Doação" as UC5
+  usecase "Registrar Doação de Item" as UC6
+  usecase "Consultar Histórico do Objeto" as UC7
+}
+
+' Relacionamentos dos Atores com os Casos de Uso
+Membro --|> Publico ' Um membro da comunidade também é parte do público
+Membro -- UC1
+Membro -- UC3
+
+Funcionario -- UC1
+Funcionario -- UC4
+Funcionario -- UC5
+Funcionario -- UC6
+Funcionario -- UC7
+
+Publico -- UC2
+
+' Relacionamentos entre Casos de Uso (se houver)
+UC4 ..> UC3 : <<extends>> ' A devolução estende a reivindicação
+UC5 ..> UC4 : <<includes>> ' A identificação para doação pode ocorrer após uma tentativa de devolução falhar
+UC6 ..> UC5 : <<includes>>
+
+@enduml
