@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model escola {
+  id_escola     Int            @id @default(autoincrement())
+  codigo_mec    Int?
+  nome          String?        @db.VarChar(250)
+  data_fundacao DateTime?      @db.Timestamp(6)
+  email         String?        @db.VarChar(100)
+  numero        String?        @db.VarChar(20)
+  complemento   String?        @db.VarChar(100)
+  bairro        String?        @db.VarChar(100)
+  cep           String?        @db.VarChar(11)
+  municipio     String?        @db.VarChar(100)
+  data_cadastro DateTime       @default(now()) @db.Timestamp(6)
+  manifestacao  manifestacao[]
+}
+
+model manifestacao {
+  id_manifestacao Int      @id(map: "manifestacao_pk") @default(autoincrement())
+  descricao       String?  @db.VarChar(10000)
+  data_cadastro   DateTime @default(now()) @db.Timestamp(6)
+  id_escola       Int
+  escola          escola   @relation(fields: [id_escola], references: [id_escola], onDelete: NoAction, onUpdate: NoAction, map: "manifestacao_escola_fk")
+
+  @@index([id_escola], map: "id_escola_manifestacao_idx")
+}

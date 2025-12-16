@@ -1,0 +1,48 @@
+#dlg-manifestacao {
+  border: none;
+  padding: 0;
+  border-radius: 16px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+#dlg-manifestacao::backdrop {
+  background: rgba(0,0,0,.4);
+}
+
+#dlg-manifestacao .dlg__form { padding: 16px 18px 18px; display: grid; gap: 12px; }
+
+.dlg__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8px; border-bottom: 1px solid #e6e6f0;
+}
+
+#dlg-manifestacao .dlg__title {
+  margin: 0; font-size: 18px; font-weight: 700; color: #4b3f72; /* roxo escuro */
+}
+
+#dlg-manifestacao #dlg-manifestacao.dlg__close {
+  border: none; background: transparent; font-size: 18px; cursor: pointer; line-height: 1;
+}
+
+#dlg-manifestacao .dlg__label { font-weight: 600; color: #444; }
+
+#dlg-manifestacao .dlg__textarea {
+  resize: vertical; width: 100%;
+  padding: 10px 12px; border-radius: 10px; border: 1px solid #d5d5e0; outline: none;
+  font: inherit; background: #fff;
+}
+#dlg-manifestacao .dlg__textarea:focus { border-color: #7c6ae6; box-shadow: 0 0 0 3px rgba(124,106,230,.15); }
+
+#dlg-manifestacao .dlg__footer {
+  display: flex; justify-content: flex-end; gap: 10px; padding-top: 8px; border-top: 1px solid #e6e6f0;
+}
+
+#dlg-manifestacao .btn {
+  padding: 10px 14px; border-radius: 10px; font-weight: 600; border: 1px solid transparent; cursor: pointer;
+}
+#dlg-manifestacao .btn--ghost { background: #f5f5fb; color: #3b3b4f; border-color: #e7e7f7; }
+#dlg-manifestacao .btn--ghost:hover { background: #efeffa; }
+#dlg-manifestacao .btn--primary { background: #7c6ae6; color: white; }
+#dlg-manifestacao .btn--primary:hover { filter: brightness(0.95); }
