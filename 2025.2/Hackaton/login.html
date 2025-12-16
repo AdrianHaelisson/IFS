@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Feira IFS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f1f5f9;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <h1>IFS Empreendedorismo</h1>
+            <p>Faça login para continuar</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" required placeholder="Seu usuário">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" required placeholder="Sua senha">
+            </div>
+            <button type="submit" style="width: 100%;">Entrar</button>
+
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.875rem;">
+                <p>Não tem conta? <a href="#" id="registerLink">Cadastre-se como Consumidor</a></p>
+                <small style="display:block; margin-top:0.5rem; color:#64748b;">(Admin: admin/123)</small>
+            </div>
+        </form>
+    </div>
+
+    <script src="assets/js/store.js"></script>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+
+        // Redirecionar se já estiver logado
+        const currentUser = Store.getCurrentUser();
+        if (currentUser) {
+            redirectUser(currentUser);
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userIn = document.getElementById('username').value;
+            const passIn = document.getElementById('password').value;
+
+            const user = Store.login(userIn, passIn);
+
+            if (user) {
+                redirectUser(user);
+            } else {
+                alert('Usuário ou senha incorretos!');
+            }
+        });
+
+        function redirectUser(user) {
+            if (user.role === 'ADMIN') window.location.href = 'admin.html';
+            else if (user.role === 'EXHIBITOR') window.location.href = 'expositores.html'; // Será o dashboard do expositor
+            else window.location.href = 'index.html'; // Dashboard do consumidor
+        }
+
+        // Registro rápido de Consumidor (Mock)
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            const name = prompt('Nome Completo:');
+            if (!name) return;
+            const username = prompt('Escolha um Usuário:');
+            if (!username) return;
+            const password = prompt('Escolha uma Senha:');
+            if (!password) return;
+
+            try {
+                Store.addUser({
+                    name,
+                    username,
+                    password,
+                    role: 'CONSUMER',
+                    exhibitorId: null
+                });
+                alert('Cadastro realizado! Faça login.');
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - IFS Empreendedorismo</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Gerenciar Produtos</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Dashboard</a></li>
+                    <li><a href="expositores.html">Expositores</a></li>
+                    <li><a href="produtos.html" class="active">Produtos</a></li>
+                    <li><a href="vendas.html">Vendas & Pedidos</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Add Product Form -->
+            <div class="card">
+                <h2>Novo Produto</h2>
+                <div class="form-group">
+                    <label for="exhibitorSelect">Selecione o Expositor</label>
+                    <select id="exhibitorSelect" required>
+                        <option value="">-- Escolha um Expositor --</option>
+                    </select>
+                </div>
+
+                <form id="productForm">
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label for="name">Nome do Produto</label>
+                            <input type="text" id="name" required placeholder="Ex: Bolo de Pote">
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Preço (R$)</label>
+                            <input type="number" id="price" required step="0.01" min="0" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label for="stock">Quantidade Disponível</label>
+                            <input type="number" id="stock" required min="0" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descrição (Opcional)</label>
+                            <input type="text" id="description" placeholder="Ex: Chocolate com morango">
+                        </div>
+                    </div>
+                    <button type="submit">Cadastrar Produto</button>
+                    <button type="reset" class="secondary">Limpar</button>
+                </form>
+            </div>
+
+            <!-- List Products -->
+            <div class="card">
+                <h2>Catálogo de Produtos</h2>
+                <div class="table-container">
+                    <table id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Descrição</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/store.js"></script>
+    <script>
+        const exhibitorSelect = document.getElementById('exhibitorSelect');
+        const productForm = document.getElementById('productForm');
+        const tableBody = document.querySelector('#productsTable tbody');
+
+        function loadExhibitors() {
+            const exhibitors = Store.getExhibitors();
+            exhibitors.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex.id;
+                option.textContent = ex.name;
+                exhibitorSelect.appendChild(option);
+            });
+        }
+
+        function renderTable() {
+            const selectedExhibitorId = exhibitorSelect.value;
+            tableBody.innerHTML = '';
+
+            if (!selectedExhibitorId) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center">Selecione um expositor acima para ver e cadastrar produtos.</td></tr>';
+                return;
+            }
+
+            const products = Store.getProducts(selectedExhibitorId);
+
+            if (products.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center">Nenhum produto cadastrado para este expositor.</td></tr>';
+                return;
+            }
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.description || '-'}</td>
+                    <td>${p.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td>${p.stock}</td>
+                    <td>-</td> 
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Event Listeners
+        exhibitorSelect.addEventListener('change', renderTable);
+
+        productForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const exhibitorId = exhibitorSelect.value;
+
+            if (!exhibitorId) {
+                alert('Por favor, selecione um expositor primeiro.');
+                return;
+            }
+
+            const newProduct = {
+                exhibitorId: exhibitorId,
+                name: document.getElementById('name').value,
+                price: document.getElementById('price').value,
+                stock: document.getElementById('stock').value,
+                description: document.getElementById('description').value
+            };
+
+            Store.addProduct(newProduct);
+            productForm.reset();
+            renderTable();
+            alert('Produto cadastrado com sucesso!');
+        });
+
+        // Initialize
+        loadExhibitors();
+        renderTable();
+    </script>
+</body>
+
+</html>

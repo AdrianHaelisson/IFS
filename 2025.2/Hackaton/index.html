@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feira IFS - Catálogo</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-img-container {
+            width: 100%;
+            height: 150px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-placeholder {
+            font-size: 2rem;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Feira de Empreendedorismo</h1>
+            <div id="user-info"></div>
+        </header>
+
+        <main>
+            <!-- Tabs Navigation -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button onclick="showTab('catalog')" id="btn-catalog">Catálogo</button>
+                <button onclick="showTab('orders')" id="btn-orders" class="secondary">Meus Pedidos</button>
+            </div>
+
+            <!-- CATALOG TAB -->
+            <div id="tab-catalog">
+                <div class="card">
+                    <h2>Catálogo de Produtos</h2>
+                    <div class="search-container"
+                        style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:flex-end;">
+                        <div style="flex:1;">
+                            <label
+                                style="font-size:0.85rem; color:#64748b; display:block; margin-bottom:0.25rem;">Buscar</label>
+                            <input type="text" id="searchName" placeholder="Nome do produto..." style="width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.85rem; color:#64748b; display:block; margin-bottom:0.25rem;">Preço
+                                Máx</label>
+                            <input type="number" id="searchMaxPrice" placeholder="R$ 0,00" style="width:100px;">
+                        </div>
+                        <div>
+                            <label
+                                style="font-size:0.85rem; color:#64748b; display:block; margin-bottom:0.25rem;">Tipo</label>
+                            <select id="filterType" style="width:auto;">
+                                <option value="">Todos</option>
+                                <option value="Produto">Produtos</option>
+                                <option value="Serviço">Serviços</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="font-size:0.85rem; color:#64748b; display:block; margin-bottom:0.25rem;">Expositor</label>
+                            <select id="filterExhibitor" style="width:auto;">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="catalog" class="product-grid" style="margin-top: 1.5rem;">
+                    <!-- Products -->
+                </div>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="tab-orders" class="hidden">
+                <div class="card">
+                    <h2>Histórico de Compras</h2>
+                    <div id="myOrdersList">
+                        <p style="text-align:center; color: #64748b;">Nenhuma compra realizada ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Carrinho (Simples) -->
+    <div id="buyModal" class="card"
+        style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; box-shadow:0 00 20px rgba(0,0,0,0.2); display:none; z-index:100;">
+        <h3>Comprar Produto</h3>
+        <p id="modalProdName"></p>
+        <div class="form-group">
+            <label id="modalQtyLabel">Quantidade</label>
+            <input type="number" id="modalQty" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>Forma de Pagamento</label>
+            <select id="modalPayment">
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="PIX">PIX</option>
+                <option value="Cartão">Cartão</option>
+            </select>
+        </div>
+        <div id="cash-change-group"
+            style="display:none; background-color:#f8fafc; padding:0.75rem; border-radius:4px; margin-bottom:1rem; border:1px solid #e2e8f0;">
+            <div style="margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem;">
+                <span style="font-weight:600; font-size:0.9rem;">Precisa de troco?</span>
+                <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                    <input type="radio" name="needChange" value="yes" style="width:auto; margin-right:0.25rem;"> Sim
+                </label>
+                <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                    <input type="radio" name="needChange" value="no" checked style="width:auto; margin-right:0.25rem;">
+                    Não
+                </label>
+            </div>
+            <div id="change-input-wrapper" style="display:none;">
+                <label style="font-size:0.9rem;">Troco para quanto?</label>
+                <input type="number" id="modalCashAmount" step="0.01" placeholder="R$ 50,00"
+                    style="margin-top:0.25rem;">
+                <div style="text-align:right; font-weight:bold; color:var(--success-color); margin-top:0.5rem;"
+                    id="modalChangeDisplay">
+                    Troco: R$ 0.00
+                </div>
+            </div>
+            <p id="exact-change-msg" style="font-size:0.85rem; color:#64748b; margin:0;">
+                Sem troco (dinheiro trocado).
+            </p>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+            <button onclick="closeModal()" class="secondary">Cancelar</button>
+            <button onclick="confirmBuy()">Confirmar Pedido</button>
+        </div>
+    </div>
+
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Check Auth (Consumer or generic view)
+        const user = Auth.check(['CONSUMER', 'ADMIN']);
+        // Admin also can see catalog for testing
+
+        const catalogDiv = document.getElementById('catalog');
+        const ordersListDiv = document.getElementById('myOrdersList');
+
+        // Tabs Logic
+        window.showTab = (tab) => {
+            if (tab === 'catalog') {
+                document.getElementById('tab-catalog').classList.remove('hidden');
+                document.getElementById('tab-orders').classList.add('hidden');
+                document.getElementById('btn-catalog').classList.remove('secondary');
+                document.getElementById('btn-orders').classList.add('secondary');
+            } else {
+                document.getElementById('tab-catalog').classList.add('hidden');
+                document.getElementById('tab-orders').classList.remove('hidden');
+                document.getElementById('btn-catalog').classList.add('secondary');
+                document.getElementById('btn-orders').classList.remove('secondary');
+                renderMyOrders();
+            }
+        }
+
+        // --- Catalog Logic ---
+        const exhibitors = Store.getExhibitors();
+        const filterExhibitor = document.getElementById('filterExhibitor');
+
+        exhibitors.forEach(e => {
+            const opt = document.createElement('option');
+            opt.value = e.id;
+            opt.textContent = e.name;
+            filterExhibitor.appendChild(opt);
+        });
+
+        // Filter Event Listeners
+        document.getElementById('searchName').addEventListener('input', () => renderCatalog());
+        document.getElementById('searchMaxPrice').addEventListener('input', () => renderCatalog());
+        document.getElementById('filterType').addEventListener('change', () => renderCatalog());
+        filterExhibitor.addEventListener('change', () => renderCatalog());
+
+        function renderCatalog() {
+            // Get Filter Values
+            const searchName = document.getElementById('searchName').value.toLowerCase();
+            const searchMaxPrice = parseFloat(document.getElementById('searchMaxPrice').value);
+            const selectedType = document.getElementById('filterType').value;
+            const selectedExhibitor = filterExhibitor.value;
+
+            // Get All Products (we filter in memory)
+            // Note: Store.getProducts(null) returns ALL products
+            let products = Store.getProducts();
+
+            // Apply Filters
+            products = products.filter(p => {
+                // Exhibitor Filter
+                if (selectedExhibitor && p.exhibitorId != selectedExhibitor) return false;
+
+                // Name Filter
+                if (searchName && !p.name.toLowerCase().includes(searchName)) return false;
+
+                // Price Filter
+                if (!isNaN(searchMaxPrice) && p.price > searchMaxPrice) return false;
+
+                // Type Filter
+                if (selectedType && p.type !== selectedType) return false;
+
+                return true;
+            });
+
+            const catalogDiv = document.getElementById('catalog');
+            catalogDiv.innerHTML = '';
+
+            if (products.length === 0) {
+                catalogDiv.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem; color:#64748b;">Nenhum produto encontrado com esses filtros.</p>';
+                return;
+            }
+
+            products.forEach(p => {
+                if (p.stock > 0 || p.type === 'Serviço') { // Show services even if stock logic is weird, or ensure stock logic handles services
+                    // (Assuming stock > 0 check is valid for products, services usually have stock 999999)
+                    const ex = exhibitors.find(e => e.id == p.exhibitorId);
+                    const div = document.createElement('div');
+
+                    // Logic for image
+                    const imgContent = p.image
+                        ? `<img src="${p.image}" alt="${p.name}">`
+                        : `<div class="product-placeholder">📷</div>`;
+
+                    // Logic for Type Label (Always show now)
+                    const typeLabel = p.type === 'Serviço' ? 'Serviço' : 'Produto';
+                    const typeColor = p.type === 'Serviço' ? '#0ea5e9' : '#10b981';
+
+                    div.className = 'product-card';
+                    div.innerHTML = `
+                        <div>
+                            <div class="product-img-container">
+                                ${imgContent}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <h3 style="font-size:1.1rem; color:var(--primary-color); margin:0;">${p.name}</h3>
+                            </div>
+                            <p style="font-size:0.8rem; color:#64748b; margin-top:0.25rem;">${ex ? ex.name : 'Unknown'}</p>
+                            
+                            <!-- Visualização do Tipo -->
+                            <div style="font-size:0.75rem; font-weight:600; color:${typeColor}; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.5px;">
+                                ${typeLabel}
+                            </div>
+                            
+                            <p style="font-size:0.9rem; color:#334155;">${p.description || ''}</p>
+                        </div>
+                        <div style="margin-top:1rem;">
+                            <strong style="display:block; font-size:1.2rem; margin-bottom:0.5rem;">R$ ${p.price.toFixed(2)}</strong>
+                            <button onclick="openModal(${p.id})" style="width:100%;">Comprar</button>
+                        </div>
+                    `;
+                    catalogDiv.appendChild(div);
+                }
+            });
+        }
+
+        // Modal Logic
+        window.openModal = (prodId) => {
+            const products = Store.getProducts();
+            currentModalProduct = products.find(p => p.id == prodId);
+            if (currentModalProduct) {
+                document.getElementById('modalProdName').textContent = currentModalProduct.name;
+
+                // Update Label with Unit
+                const unit = currentModalProduct.unit || 'un';
+                document.getElementById('modalQtyLabel').textContent = `Quantidade (${unit})`;
+
+                const qtyInput = document.getElementById('modalQty');
+                qtyInput.value = 1;
+                qtyInput.min = 1;
+
+                // Set Max if it is a Product (not Service/infinite stock)
+                if (currentModalProduct.type !== 'Serviço') {
+                    qtyInput.max = currentModalProduct.stock;
+                } else {
+                    qtyInput.removeAttribute('max');
+                }
+
+                // Reset Payment UI
+                // Reset Payment UI
+                document.getElementById('modalPayment').value = 'Dinheiro';
+                document.getElementById('cash-change-group').style.display = 'block';
+                // Reset Radios
+                const radios = document.getElementsByName('needChange');
+                radios.forEach(r => { if (r.value === 'no') r.checked = true; });
+
+                document.getElementById('change-input-wrapper').style.display = 'none';
+                document.getElementById('exact-change-msg').style.display = 'block';
+                document.getElementById('modalCashAmount').value = '';
+                document.getElementById('modalChangeDisplay').textContent = 'Troco: R$ 0.00';
+
+                document.getElementById('buyModal').style.display = 'block';
+            }
+        }
+
+        // Change Calc Logic
+        document.getElementById('modalPayment').addEventListener('change', (e) => {
+            const group = document.getElementById('cash-change-group');
+            if (e.target.value === 'Dinheiro') group.style.display = 'block';
+            else group.style.display = 'none';
+        });
+
+        document.getElementsByName('needChange').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const inputWrapper = document.getElementById('change-input-wrapper');
+                const msg = document.getElementById('exact-change-msg');
+                if (e.target.value === 'yes') {
+                    inputWrapper.style.display = 'block';
+                    msg.style.display = 'none';
+                } else {
+                    inputWrapper.style.display = 'none';
+                    msg.style.display = 'block';
+                }
+            });
+        });
+
+        document.getElementById('modalCashAmount').addEventListener('input', (e) => {
+            if (!currentModalProduct) return;
+            const val = parseFloat(e.target.value);
+            const qty = parseInt(document.getElementById('modalQty').value);
+            const total = currentModalProduct.price * qty;
+
+            if (!isNaN(val) && val >= total) {
+                const change = val - total;
+                document.getElementById('modalChangeDisplay').textContent = `Troco: R$ ${change.toFixed(2)}`;
+                document.getElementById('modalChangeDisplay').style.color = 'var(--success-color)';
+            } else {
+                document.getElementById('modalChangeDisplay').textContent = 'Valor insuficiente';
+                document.getElementById('modalChangeDisplay').style.color = 'var(--danger-color)';
+            }
+        });
+
+        window.closeModal = () => {
+            document.getElementById('buyModal').style.display = 'none';
+            currentModalProduct = null;
+        }
+
+        window.confirmBuy = () => {
+            if (!currentModalProduct) return;
+            const qty = parseInt(document.getElementById('modalQty').value);
+
+            if (qty > currentModalProduct.stock) {
+                alert('Estoque insuficiente!');
+                return;
+            }
+
+            const payMethod = document.getElementById('modalPayment').value;
+            let changeVal = 0;
+            let amountPaidVal = 0;
+
+            if (payMethod === 'Dinheiro') {
+                const needsChange = document.querySelector('input[name="needChange"]:checked').value === 'yes';
+                const total = currentModalProduct.price * qty;
+
+                if (needsChange) {
+                    amountPaidVal = parseFloat(document.getElementById('modalCashAmount').value);
+                    if (isNaN(amountPaidVal) || amountPaidVal < total) {
+                        alert('Valor para troco inválido ou insuficiente!');
+                        return;
+                    }
+                    changeVal = amountPaidVal - total;
+                } else {
+                    amountPaidVal = total;
+                    changeVal = 0;
+                }
+            }
+
+            Store.addOrder({
+                exhibitorId: currentModalProduct.exhibitorId,
+                consumerId: user.id || 0,
+                clientName: user.name || 'Consumidor',
+                paymentMethod: payMethod,
+                paymentStatus: 'Pendente',
+                change: changeVal,
+                amountPaid: amountPaidVal,
+                items: [{
+                    productId: currentModalProduct.id,
+                    name: currentModalProduct.name,
+                    quantity: qty,
+                    unitPrice: currentModalProduct.price
+                }]
+            });
+
+            alert('Pedido realizado com sucesso! Aguarde a entrega.');
+            closeModal();
+            renderCatalog(filterSelect.value);
+        }
+
+        // --- Orders Logic ---
+        function renderMyOrders() {
+            if (!user) return; // Should allow guest but we force login now
+            const orders = Store.getOrders(null, user.id); // Filter by consumerId
+            ordersListDiv.innerHTML = '';
+
+            if (orders.length === 0) {
+                ordersListDiv.innerHTML = '<p style="text-align:center; color: #64748b;">Nenhuma compra realizada ainda.</p>';
+                return;
+            }
+
+            orders.reverse().forEach(order => {
+                const ex = exhibitors.find(e => e.id == order.exhibitorId);
+                const exName = ex ? ex.name : 'Expositor Desconhecido';
+
+                const statusColor = order.status === 'Novo' ? 'info' : (order.status === 'Em Preparação' ? 'warning' : (order.status === 'Entregue' ? 'success' : 'secondary'));
+
+                const div = document.createElement('div');
+                div.style.borderBottom = '1px solid #e2e8f0';
+                div.style.padding = '1rem 0';
+
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <strong>Pedido #${order.id.toString().slice(-4)}</strong>
+                        <span class="badge ${statusColor}">${order.status}</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#64748b; margin-bottom:0.5rem;">
+                        De: <strong>${exName}</strong> &bull; ${new Date(order.createdAt).toLocaleString()}
+                    </div>
+                    <ul style="font-size: 0.9rem; margin-bottom:0.5rem; padding-left:1rem;">
+                        ${order.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}
+                    </ul>
+                    <div style="text-align:right; font-weight:600;">
+                        Total: R$ ${order.totalValue.toFixed(2)}
+                    </div>
+                `;
+                ordersListDiv.appendChild(div);
+            });
+        }
+
+        // Init
+        renderCatalog();
+    </script>
+</body>
+
+</html>

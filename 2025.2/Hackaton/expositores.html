@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Expositor - Feira IFS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Painel da Equipe</h1>
+            <div id="user-info"></div>
+        </header>
+
+        <main>
+            <div id="team-info-banner" class="card"
+                style="background-color: #e0f2fe; border: 1px solid #bae6fd; margin-bottom: 2rem;">
+                <h2>Olá, <span id="memberName"></span>!</h2>
+                <p>Você está gerenciando a equipe: <strong id="teamNameLoading">...</strong></p>
+            </div>
+
+            <!-- DASHBOARD STATS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Faturamento Total</h3>
+                    <div class="value" id="statRevenue">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pedidos Pendentes</h3>
+                    <div class="value" id="statPending">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Vendas Hoje</h3>
+                    <div class="value" id="statToday">0</div>
+                </div>
+            </div>
+
+            <!-- CHART SECTION -->
+            <div class="card" style="margin-bottom: 2rem; padding:1rem;">
+                <h3 style="margin-bottom:1rem;">Meus Produtos Mais Vendidos</h3>
+                <div style="position: relative; height:250px; width:100%;">
+                    <canvas id="mySalesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid-cols-2">
+                <!-- PRODUCTS SECTION -->
+                <div class="card">
+                    <h2>Meus Produtos</h2>
+                    <form id="productForm">
+                        <!-- Tipo Selection -->
+                        <div class="form-group">
+                            <label>Tipo de Item</label>
+                            <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="radio" name="prodType" value="Produto" checked style="width: auto;">
+                                    Produto
+                                </label>
+                                <label
+                                    style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="radio" name="prodType" value="Serviço" style="width: auto;"> Serviço
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nome do Item</label>
+                            <input type="text" id="prodName" required placeholder="Ex: Bolo ou Limpeza de PC">
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Imagem (ou upload abaixo)</label>
+                            <input type="url" id="prodImage" placeholder="https://exemplo.com/foto.jpg">
+                            <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                                <span style="font-size:0.85rem; color:#64748b;">Ou arquivo:</span>
+                                <input type="file" id="prodFile" accept="image/*" style="font-size:0.85rem;">
+                            </div>
+                        </div>
+                        <div class="grid-cols-2">
+                            <div class="form-group">
+                                <label id="priceLabel">Preço (R$)</label>
+                                <input type="number" step="0.01" id="prodPrice" required>
+                            </div>
+                            <div class="form-group" id="stockContainer">
+                                <label>Estoque</label>
+                                <input type="number" id="prodStock" required>
+                            </div>
+                        </div>
+                        <button type="submit">Cadastrar Produto</button>
+                    </form>
+
+                    <table id="myProductsTable" style="margin-top: 1rem; font-size: 0.9rem;">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Tipo</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- ORDERS SECTION -->
+                <div class="card">
+                    <h2>Pedidos Recebidos</h2>
+                    <div id="ordersList">
+                        <p style="text-align:center; color: #64748b;">Nenhum pedido ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Check Auth (Exhibitor Only)
+        let user = Auth.check(['EXHIBITOR']);
+
+        // Refresh user from Store to get latest changes (e.g. linked team)
+        const allUsers = Store.getUsers();
+        let currentUser = allUsers.find(u => u.username === user.username);
+
+        if (currentUser) {
+            // Update session if changed
+            if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+                localStorage.setItem(Store.KEYS.CURRENT_USER, JSON.stringify(currentUser));
+                user = currentUser; // Update reference
+            }
+        }
+
+        if (user && !user.exhibitorId) {
+            alert('Você não está vinculado a nenhuma equipe. Contate o administrador.');
+            Auth.logout();
+        }
+
+        const teamId = user.exhibitorId;
+        const teams = Store.getExhibitors();
+        const myTeam = teams.find(t => t.id == teamId);
+
+        // Render Header Info
+        if (myTeam) {
+            document.getElementById('teamNameLoading').textContent = myTeam.name;
+            document.getElementById('memberName').textContent = user.name;
+        }
+
+        // --- Products Logic ---
+        function renderMyProducts() {
+            const products = Store.getProducts(teamId);
+            const tbody = document.querySelector('#myProductsTable tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                const priceNumber = parseFloat(p.price);
+                const priceDisplay = isNaN(priceNumber) ? '0.00' : priceNumber.toFixed(2);
+                const typeBadge = p.type === 'Serviço'
+                    ? '<span class="badge info">Serviço</span>'
+                    : '<span class="badge success">Produto</span>';
+
+                const stockDisplay = p.type === 'Serviço'
+                    ? '<span style="color:#666; font-size:0.9rem;">-</span>'
+                    : `<input type="number" 
+                               value="${p.stock}" 
+                               style="width: 70px; padding: 0.2rem; text-align: center;" 
+                               onchange="updateStock(${p.id}, this.value)">`;
+
+                const imgHtml = p.image ? `<img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; margin-right:0.5rem; vertical-align:middle;">` : '';
+
+                tr.innerHTML = `
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            ${imgHtml}
+                            ${p.name}
+                        </div>
+                    </td>
+                    <td>${typeBadge}</td>
+                    <td>R$ ${priceDisplay}</td>
+                    <td style="text-align: center;">
+                        ${stockDisplay}
+                    </td>
+                    <td>
+                        <button onclick="editProduct(${p.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-right: 0.5rem;">Editar</button>
+                        <button onclick="deleteProduct(${p.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger-color); border-color: var(--danger-color);">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.updateStock = (id, val) => {
+            Store.updateProductStock(id, val);
+            // Optional: feedback or refresh, but input change is enough
+        }
+
+        window.deleteProduct = (id) => {
+            if (confirm('Tem certeza que deseja excluir este item?')) {
+                Store.removeProduct(id);
+                renderMyProducts();
+            }
+        }
+
+        // Edit Mode State
+        let editingProductId = null;
+        let currentFileBase64 = null;
+
+        // File Reader
+        document.getElementById('prodFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    currentFileBase64 = ev.target.result;
+                    // Clear URL input to prioritise file
+                    document.getElementById('prodImage').value = '';
+                    document.getElementById('prodImage').placeholder = "Imagem carregada: " + file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.editProduct = (id) => {
+            const products = Store.getProducts(teamId);
+            const product = products.find(p => p.id == id);
+            if (product) {
+                editingProductId = id;
+                document.getElementById('prodName').value = product.name;
+                document.getElementById('prodPrice').value = product.price;
+
+                // Image Handling
+                currentFileBase64 = null;
+                document.getElementById('prodFile').value = ''; // Reset file input
+
+                if (product.image && product.image.startsWith('data:')) {
+                    // It is a Base64 image
+                    currentFileBase64 = product.image;
+                    document.getElementById('prodImage').value = '';
+                    document.getElementById('prodImage').placeholder = "[Imagem em memória]";
+                } else {
+                    document.getElementById('prodImage').value = product.image || '';
+                    document.getElementById('prodImage').placeholder = "https://exemplo.com/foto.jpg";
+                }
+
+                // Select Type
+                const radios = document.getElementsByName('prodType');
+                for (const r of radios) {
+                    if (r.value === product.type) {
+                        r.checked = true;
+                        // Trigger change event manually to update UI
+                        r.dispatchEvent(new Event('change'));
+                    }
+                }
+
+                if (product.type !== 'Serviço') {
+                    document.getElementById('prodStock').value = product.stock;
+                }
+
+                // Change Button
+                const btn = document.getElementById('productForm').querySelector('button[type="submit"]');
+                btn.textContent = 'Salvar Alterações';
+                btn.classList.add('warning');
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const typeButtons = document.getElementsByName('prodType');
+            let selectedType = 'Produto';
+            for (const btn of typeButtons) {
+                if (btn.checked) selectedType = btn.value;
+            }
+
+            const productData = {
+                exhibitorId: teamId,
+                name: document.getElementById('prodName').value,
+                price: document.getElementById('prodPrice').value,
+                image: document.getElementById('prodImage').value || currentFileBase64,
+                stock: selectedType === 'Serviço' ? 999999 : document.getElementById('prodStock').value,
+                type: selectedType,
+                description: ''
+            };
+
+            if (editingProductId) {
+                Store.updateProduct(editingProductId, productData);
+                alert('Item atualizado!');
+
+                // Reset
+                editingProductId = null;
+                const btn = document.getElementById('productForm').querySelector('button[type="submit"]');
+                btn.textContent = 'Cadastrar Produto';
+                btn.classList.remove('warning');
+            } else {
+                Store.addProduct(productData);
+                alert('Item adicionado!');
+            }
+
+            // Reset
+            currentFileBase64 = null;
+            document.getElementById('prodImage').placeholder = "https://exemplo.com/foto.jpg";
+
+            document.getElementById('productForm').reset();
+            // Reset UI
+            document.getElementById('priceLabel').textContent = 'Preço (R$)';
+            document.getElementById('stockContainer').style.visibility = 'visible';
+            renderMyProducts();
+        });
+
+        // Toggle UI based on Type
+        document.querySelectorAll('input[name="prodType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const stockDiv = document.getElementById('stockContainer');
+                const stockInput = document.getElementById('prodStock');
+
+                if (e.target.value === 'Serviço') {
+                    stockDiv.style.visibility = 'hidden';
+                    stockInput.removeAttribute('required');
+                } else {
+                    stockDiv.style.visibility = 'visible';
+                    stockInput.setAttribute('required', 'true');
+                }
+            });
+        });
+
+        // --- Orders Logic ---
+        function renderMyOrders() {
+            const orders = Store.getOrders(teamId);
+            const container = document.getElementById('ordersList');
+            container.innerHTML = '';
+
+            // Update Stats
+            let revenue = 0;
+            let pending = 0;
+            let salesToday = 0;
+            const todayStr = new Date().toDateString();
+
+            if (orders.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: #64748b;">Nenhum pedido ainda.</p>';
+            } else {
+                orders.forEach(o => {
+                    // Calc details
+                    if (o.status !== 'Cancelado') {
+                        revenue += o.totalValue;
+                    }
+                    if (o.status === 'Novo' || o.status === 'Em Preparação') {
+                        pending++;
+                    }
+                    if (new Date(o.createdAt).toDateString() === todayStr && o.status !== 'Cancelado') {
+                        salesToday++;
+                    }
+                });
+            }
+
+            document.getElementById('statRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statToday').textContent = salesToday;
+
+            updateMyChart(orders);
+
+            if (orders.length === 0) return;
+
+            orders.reverse().forEach(order => {
+                const div = document.createElement('div');
+                div.style.borderBottom = '1px solid #e2e8f0';
+                div.style.padding = '1rem 0';
+
+                // Status translator
+                const statusColor = order.status === 'Novo' ? 'info' : (order.status === 'Em Preparação' ? 'warning' : (order.status === 'Entregue' ? 'success' : 'secondary'));
+
+                const payStatus = order.paymentStatus || 'Pendente'; // default for backward compat
+                const payColor = payStatus === 'Pago' ? 'success' : 'danger';
+                const payMethod = order.paymentMethod || 'Dinheiro';
+
+                // Change Info
+                let changeHtml = '';
+                if (payMethod === 'Dinheiro' && order.amountPaid) {
+                    const ch = parseFloat(order.change || 0);
+                    const paid = parseFloat(order.amountPaid);
+
+                    if (ch > 0.005) {
+                        changeHtml = `<div style="margin-top:0.25rem; font-size:0.85rem; color:#166534; background-color:#dcfce7; padding:0.25rem 0.5rem; border-radius:4px; display:inline-block;">
+                            <strong>Troco: R$ ${ch.toFixed(2)}</strong> (Pagou R$ ${paid.toFixed(2)})
+                        </div>`;
+                    } else {
+                        changeHtml = `<div style="margin-top:0.25rem; font-size:0.85rem; color:#64748b; background-color:#f1f5f9; padding:0.25rem 0.5rem; border-radius:4px; display:inline-block;">
+                            <span style="font-weight:600;">Pagamento Exato</span>
+                        </div>`;
+                    }
+                }
+
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <strong>${order.clientName} (Cliente)</strong>
+                        <div style="display:flex; gap:0.5rem;">
+                             <span class="badge ${statusColor}">${order.status}</span>
+                             <span class="badge ${payColor}">${payStatus}</span>
+                        </div>
+                    </div>
+                    <div style="font-size:0.85rem; color:#64748b; margin-bottom:0.5rem;">
+                        Pagamento via: <strong>${payMethod}</strong>
+                        ${changeHtml}
+                    </div>
+                    <ul style="font-size: 0.9rem; margin-bottom:0.5rem; padding-left:1rem;">
+                        ${order.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}
+                    </ul>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>Total: R$ ${order.totalValue.toFixed(2)}</strong>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+                            ${payStatus === 'Pendente' && order.status !== 'Cancelado' ? `<button onclick="markPaid(${order.id})" class="secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; background-color:#dcfce7; color:#166534; border:1px solid #bbf7d0;">Marcar Pago</button>` : ''}
+                            ${order.status === 'Novo' ? `<button onclick="updateStatus(${order.id}, 'Em Preparação')" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Aceitar</button>` : ''}
+                            ${order.status === 'Em Preparação' ? `<button onclick="updateStatus(${order.id}, 'Entregue')" style="padding:0.25rem 0.5rem; font-size:0.8rem; background-color:var(--success-color);">Entregar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        window.updateStatus = (id, status) => {
+            Store.updateOrderStatus(id, status);
+            renderMyOrders();
+        }
+
+        window.markPaid = (id) => {
+            if (confirm('Confirmar recebimento do pagamento?')) {
+                Store.updateOrderPayment(id, 'Pago');
+                renderMyOrders();
+            }
+        }
+        let myChartInstance = null;
+        function updateMyChart(orders) {
+            const ctx = document.getElementById('mySalesChart');
+            if (!ctx) return;
+
+            // 1. Aggregate
+            const productCounts = {};
+            orders.forEach(o => {
+                if (o.items) {
+                    o.items.forEach(item => {
+                        productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+                    });
+                }
+            });
+
+            // 2. Sort & Slice
+            const sortedProducts = Object.entries(productCounts)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 5); // Top 5 for exhibitor
+
+            const labels = sortedProducts.map(([name]) => name);
+            const data = sortedProducts.map(([, count]) => count);
+
+            // 3. Render
+            if (myChartInstance) {
+                myChartInstance.destroy();
+            }
+
+            myChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Vendas',
+                        data: data,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        }
+
+        // Init
+        renderMyProducts();
+        renderMyOrders();
+
+        // Auto refresh orders every 10s
+        setInterval(() => {
+            renderMyOrders();
+            renderMyProducts();
+        }, 10000);
+    </script>
+</body>
+
+</html>

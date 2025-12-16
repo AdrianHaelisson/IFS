@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - Feira IFS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Painel do Administrador</h1>
+            <div id="user-info"></div>
+        </header>
+
+        <main>
+            <!-- Tabs (Simples) -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button onclick="showTab('teams')" id="btn-teams">Gerenciar Equipes</button>
+                <button onclick="showTab('users')" id="btn-users" class="secondary">Gerenciar Usuários</button>
+                <button onclick="showTab('sales')" id="btn-sales" class="secondary">Acompanhar Vendas</button>
+            </div>
+
+            <!-- TAB: EQUIPES (EXPOSITORES) -->
+            <div id="tab-teams" class="card">
+                <h2>Cadastrar Equipe (Expositor)</h2>
+                <form id="teamForm">
+                    <div class="form-group">
+                        <label for="teamName">Nome da Equipe</label>
+                        <input type="text" id="teamName" required placeholder="Ex: Equipe Inovação">
+                    </div>
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label for="teamCourse">Turma / Curso</label>
+                            <input type="text" id="teamCourse" required placeholder="Ex: Informática 2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="teamContact">Contato</label>
+                            <input type="text" id="teamContact" required placeholder="(79) 99999-9999">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="teamDesc">Descrição do que vende</label>
+                        <textarea id="teamDesc" placeholder="Descrição..."></textarea>
+                    </div>
+                    <button type="submit">Salvar Equipe</button>
+                </form>
+
+                <h3 style="margin-top:2rem; margin-bottom:1rem;">Equipes Cadastradas</h3>
+                <div class="table-container">
+                    <table id="teamsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Curso</th>
+                                <th>Integrantes</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: USUÁRIOS (ALUNOS) -->
+            <div id="tab-users" class="card hidden">
+                <h2>Cadastrar Aluno e Vincular à Equipe</h2>
+                <form id="userForm">
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label for="studentName">Nome do Aluno</label>
+                            <input type="text" id="studentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamSelect">Vincular à Equipe</label>
+                            <select id="teamSelect" required>
+                                <option value="">-- Selecione --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label for="studentUser">Usuário de Acesso</label>
+                            <input type="text" id="studentUser" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentPass">Senha</label>
+                            <input type="text" id="studentPass" required value="123">
+                        </div>
+                    </div>
+                    <button type="submit">Cadastrar Aluno</button>
+                </form>
+
+                <h3 style="margin-top:2rem; margin-bottom:1rem;">Alunos Cadastrados</h3>
+                <div class="table-container">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Usuário</th>
+                                <th>Equipe</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: VENDAS (DASHBOARD) -->
+            <div id="tab-sales" class="card hidden">
+                <h2>Acompanhamento de Vendas</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Vendido</h3>
+                        <div class="value" id="totalSales">R$ 0,00</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Pedidos</h3>
+                        <div class="value" id="totalOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Ticket Médio</h3>
+                        <div class="value" id="avgTicket">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div style="margin: 2rem 0; padding:1rem; border:1px solid #e2e8f0; border-radius:8px;">
+                    <h3 style="margin-bottom:1rem;">Produtos Mais Vendidos (Top DA FEIRA)</h3>
+                    <div style="position: relative; height:300px; width:100%;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>Histórico de Pedidos</h3>
+                    <div style="display: flex; gap:0.5rem;">
+                        <input type="text" id="salesFilterExhibitor" placeholder="Filtrar por Expositor..."
+                            style="padding: 0.4rem; font-size: 0.9rem;">
+                        <select id="salesFilterStatus" style="padding: 0.4rem; font-size: 0.9rem;">
+                            <option value="">Todos Status</option>
+                            <option value="Novo">Novo</option>
+                            <option value="Em Preparação">Em Preparação</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                        <button onclick="renderSales()" class="secondary" style="padding: 0.4rem 1rem;">Filtrar</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="salesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Expositor</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Pagamento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Check Auth (Only Admin)
+        Auth.check(['ADMIN']);
+
+        // UI Logic
+        const tabTeams = document.getElementById('tab-teams');
+        const tabUsers = document.getElementById('tab-users');
+        const tabSales = document.getElementById('tab-sales');
+
+        const btnTeams = document.getElementById('btn-teams');
+        const btnUsers = document.getElementById('btn-users');
+        const btnSales = document.getElementById('btn-sales');
+
+        window.showTab = (tab) => {
+            // Hide all
+            tabTeams.classList.add('hidden');
+            tabUsers.classList.add('hidden');
+            tabSales.classList.add('hidden');
+
+            // Reset buttons
+            btnTeams.classList.add('secondary');
+            btnUsers.classList.add('secondary');
+            btnSales.classList.add('secondary');
+
+            if (tab === 'teams') {
+                tabTeams.classList.remove('hidden');
+                btnTeams.classList.remove('secondary');
+            } else if (tab === 'users') {
+                tabUsers.classList.remove('hidden');
+                btnUsers.classList.remove('secondary');
+            } else if (tab === 'sales') {
+                tabSales.classList.remove('hidden');
+                btnSales.classList.remove('secondary');
+                renderSales();
+            }
+        }
+
+        // --- Teams Logic ---
+        const teamForm = document.getElementById('teamForm');
+
+        function renderTeams() {
+            const teams = Store.getExhibitors();
+            const users = Store.getUsers();
+
+            // 1. Populate Link User Select
+            const select = document.getElementById('teamSelect');
+            select.innerHTML = '<option value="">-- Selecione --</option>';
+            teams.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                select.appendChild(opt);
+            });
+
+            // 2. Populate Teams Table
+            const tbody = document.querySelector('#teamsTable tbody');
+            tbody.innerHTML = '';
+
+            teams.forEach(t => {
+                // Count members
+                const members = users.filter(u => u.exhibitorId == t.id).map(u => u.name).join(', ');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${t.id}</td>
+                    <td>${t.name}</td>
+                    <td>${t.course}</td>
+                    <td>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <span>${members || '<span style="color:red; font-size:0.8rem">Sem membros</span>'}</span>
+                            <div>
+                                <button onclick="editTeam(${t.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-right: 0.5rem;">Editar</button>
+                                <button onclick="deleteTeam(${t.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger-color); border-color: var(--danger-color);">Excluir</button>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+
+        window.deleteTeam = (id) => {
+            if (confirm('Tem certeza que deseja excluir esta equipe?')) {
+                Store.removeExhibitor(id);
+                renderTeams();
+                renderUsers();
+            }
+        }
+
+        // Edit Team State
+        let editingTeamId = null;
+
+        window.editTeam = (id) => {
+            const teams = Store.getExhibitors();
+            const team = teams.find(t => t.id == id);
+            if (team) {
+                editingTeamId = id;
+                document.getElementById('teamName').value = team.name;
+                document.getElementById('teamCourse').value = team.course;
+                document.getElementById('teamContact').value = team.contact;
+                document.getElementById('teamDesc').value = team.description || '';
+
+                // Change Button
+                const btn = teamForm.querySelector('button[type="submit"]');
+                btn.textContent = 'Atualizar Equipe';
+                btn.classList.add('warning');
+            }
+        }
+
+        document.getElementById('teamForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const teamData = {
+                name: document.getElementById('teamName').value,
+                course: document.getElementById('teamCourse').value,
+                contact: document.getElementById('teamContact').value,
+                description: document.getElementById('teamDesc').value
+            };
+
+            if (editingTeamId) {
+                Store.updateExhibitor(editingTeamId, teamData);
+                alert('Equipe atualizada!');
+
+                // Reset
+                editingTeamId = null;
+                const btn = teamForm.querySelector('button[type="submit"]');
+                btn.textContent = 'Salvar Equipe';
+                btn.classList.remove('warning');
+            } else {
+                Store.addExhibitor(teamData);
+                alert('Equipe cadastrada!');
+            }
+
+            document.getElementById('teamForm').reset();
+            renderTeams();
+            // Refresh team selector for users
+            renderTeamSelector();
+        });
+
+        // --- Users Logic ---
+        function renderTeamSelector() {
+            const teams = Store.getExhibitors();
+            const sel = document.getElementById('userTeam');
+            sel.innerHTML = '<option value="">-- Selecione uma Equipe --</option>';
+            teams.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        function renderUsers() {
+            const users = Store.getUsers();
+            const teams = Store.getExhibitors();
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                if (u.role === 'ADMIN') return; // Don't list admin for deletion to be safe
+
+                const team = teams.find(t => t.id == u.exhibitorId);
+                const teamName = team ? team.name : 'Sem Equipe';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${u.name}</td>
+                    <td>${u.username}</td>
+                    <td>${teamName}</td>
+                    <td>
+                         <button onclick="editUser(${u.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-right: 0.5rem;">Editar</button>
+                         <button onclick="deleteUser(${u.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger-color); border-color: var(--danger-color);">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+
+        window.deleteUser = (id) => {
+            if (confirm('Tem certeza que deseja excluir este aluno?')) {
+                Store.removeUser(id);
+                renderUsers();
+            }
+        }
+
+        // Edit Mode State
+        let editingUserId = null;
+
+        window.editUser = (id) => {
+            const users = Store.getUsers();
+            const user = users.find(u => u.id == id);
+            if (user) {
+                editingUserId = id;
+                document.getElementById('studentName').value = user.name;
+                document.getElementById('teamSelect').value = user.exhibitorId || '';
+                document.getElementById('studentUser').value = user.username;
+                document.getElementById('studentPass').value = user.password;
+
+                // Change Button Text
+                const btn = userForm.querySelector('button[type="submit"]');
+                btn.textContent = 'Atualizar Aluno';
+                btn.classList.add('warning'); // Visual cue
+            }
+        }
+
+        userForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            try {
+                const userData = {
+                    name: document.getElementById('studentName').value,
+                    username: document.getElementById('studentUser').value,
+                    password: document.getElementById('studentPass').value,
+                    role: 'EXHIBITOR',
+                    exhibitorId: document.getElementById('teamSelect').value
+                };
+
+                if (editingUserId) {
+                    // Update
+                    Store.updateUser(editingUserId, userData);
+                    alert('Aluno atualizado!');
+
+                    // Reset State
+                    editingUserId = null;
+                    const btn = userForm.querySelector('button[type="submit"]');
+                    btn.textContent = 'Cadastrar Aluno';
+                    btn.classList.remove('warning');
+                } else {
+                    // Create
+                    Store.addUser(userData);
+                    alert('Aluno cadastrado e vinculado!');
+                }
+
+                userForm.reset();
+                renderUsers();
+                renderTeams(); // Update members count
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        // --- Sales/Dashboard Logic ---
+        function renderSales() {
+            const allOrders = Store.getOrders();
+            const exhibitors = Store.getExhibitors();
+
+            // Filters
+            const filterExhibitor = document.getElementById('salesFilterExhibitor').value.toLowerCase();
+            const filterStatus = document.getElementById('salesFilterStatus').value;
+
+            let filteredOrders = allOrders.filter(o => {
+                const exhibitor = exhibitors.find(e => e.id == o.exhibitorId);
+                const exhibitorName = exhibitor ? exhibitor.name.toLowerCase() : '';
+
+                const matchesExhibitor = !filterExhibitor || exhibitorName.includes(filterExhibitor);
+                const matchesStatus = !filterStatus || o.status === filterStatus;
+
+                return matchesExhibitor && matchesStatus;
+            });
+
+            // Update Chart with Filtered Data (or Global if prefer)
+            updateSalesChart(filteredOrders);
+
+            // Calculate Stats (on filtered data or global? Usually global or filtered. Let's do Filtered for power users)
+            // Actually, for dashboard top cards, usually global is better unless specified. Let's do Global forCards, Filtered for Table.
+
+            const totalSalesVal = allOrders.reduce((acc, o) => acc + o.totalValue, 0);
+            const totalOrdersVal = allOrders.length;
+            const avgTicketVal = totalOrdersVal > 0 ? (totalSalesVal / totalOrdersVal) : 0;
+
+            document.getElementById('totalSales').textContent = `R$ ${totalSalesVal.toFixed(2)}`;
+            document.getElementById('totalOrders').textContent = totalOrdersVal;
+            document.getElementById('avgTicket').textContent = `R$ ${avgTicketVal.toFixed(2)}`;
+
+            // Render Table
+            const tbody = document.querySelector('#salesTable tbody');
+            tbody.innerHTML = '';
+
+            filteredOrders.reverse().forEach(o => {
+                const exhibitor = exhibitors.find(e => e.id == o.exhibitorId);
+                const exhibitorName = exhibitor ? exhibitor.name : 'Desc. (ID ' + o.exhibitorId + ')';
+                const date = new Date(o.createdAt).toLocaleDateString('pt-BR') + ' ' + new Date(o.createdAt).toLocaleTimeString('pt-BR').slice(0, 5);
+
+                // Status color
+                let color = 'secondary';
+                if (o.status === 'Novo') color = 'info';
+                if (o.status === 'Em Preparação') color = 'warning';
+                if (o.status === 'Entregue') color = 'success';
+                if (o.status === 'Cancelado') color = 'danger';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${o.id.toString().slice(-4)}</td>
+                    <td style="font-size:0.8rem">${date}</td>
+                    <td>${o.clientName}</td>
+                    <td>${exhibitorName}</td>
+                    <td><strong>R$ ${o.totalValue.toFixed(2)}</strong></td>
+                    <td><span class="badge ${color}">${o.status}</span></td>
+                    <td>
+                        <button onclick="viewOrderDetails(${o.id})" class="secondary" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Ver</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.viewOrderDetails = (id) => {
+            const orders = Store.getOrders();
+            const order = orders.find(o => o.id == id);
+            if (order) {
+                const itemsStr = order.items.map(i => `- ${i.quantity}x ${i.name} (R$ ${i.unitPrice})`).join('\n');
+                alert(`Pedido #${id}\nCliente: ${order.clientName}\n\nItens:\n${itemsStr}\n\nTotal: R$ ${order.totalValue.toFixed(2)}`);
+            }
+        }
+        let salesChartInstance = null;
+        function updateSalesChart(orders) {
+            const ctx = document.getElementById('salesChart');
+            if (!ctx) return;
+
+            // 1. Aggregate Products
+            const productCounts = {};
+            orders.forEach(o => {
+                if (o.items) {
+                    o.items.forEach(item => {
+                        productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+                    });
+                }
+            });
+
+            // 2. Sort & Slice Top 10
+            const sortedProducts = Object.entries(productCounts)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 10);
+
+            const labels = sortedProducts.map(([name]) => name);
+            const data = sortedProducts.map(([, count]) => count);
+
+            // 3. Render
+            if (salesChartInstance) {
+                salesChartInstance.destroy();
+            }
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantidade Vendida',
+                        data: data,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Top Produtos (Quantidade)' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        }
+
+        // Init
+        renderTeams();
+        renderUsers();
+        if (!document.getElementById('tab-sales').classList.contains('hidden')) { // If hot reloaded and active
+            renderSales();
+        }
+    </script>
+</body>
+
+</html>

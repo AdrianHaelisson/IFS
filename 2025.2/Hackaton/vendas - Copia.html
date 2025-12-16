@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas - IFS Empreendedorismo</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .total-row {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Registro de Vendas e Pedidos</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Dashboard</a></li>
+                    <li><a href="expositores.html">Expositores</a></li>
+                    <li><a href="produtos.html">Produtos</a></li>
+                    <li><a href="vendas.html" class="active">Vendas & Pedidos</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="grid-cols-2">
+                <!-- POS / New Order Section -->
+                <div class="card">
+                    <h2>Nova Venda</h2>
+                    <div class="form-group">
+                        <label for="exhibitorSelect">Expositor</label>
+                        <select id="exhibitorSelect">
+                            <option value="">-- Selecione o Expositor --</option>
+                        </select>
+                    </div>
+
+                    <div id="salesArea" class="hidden">
+                        <div class="form-group">
+                            <label for="clientName">Nome do Cliente</label>
+                            <input type="text" id="clientName" placeholder="Nome do comprador">
+                        </div>
+
+                        <div class="form-group" style="background: #f1f5f9; padding: 1rem; border-radius: 0.5rem;">
+                            <label for="productSelect">Adicionar Produto</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select id="productSelect" style="flex: 2;">
+                                    <option value="">-- Escolha --</option>
+                                </select>
+                                <input type="number" id="qtyInput" value="1" min="1" style="flex: 1;">
+                                <button type="button" id="btnAddItem">+</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Carrinho:</label>
+                            <div id="cartList"
+                                style="min-height: 100px; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                                <!-- Cart items go here -->
+                                <p style="color: #64748b; font-size: 0.875rem; text-align: center;">Carrinho vazio</p>
+                            </div>
+                            <div class="total-row">
+                                <span>Total:</span>
+                                <span id="cartTotal">R$ 0,00</span>
+                            </div>
+                        </div>
+
+                        <button id="btnFinishOrder" style="width: 100%;">Finalizar Pedido</button>
+                    </div>
+                </div>
+
+                <!-- Orders List -->
+                <div class="card">
+                    <h2>Pedidos do Expositor</h2>
+                    <div id="ordersList">
+                        <p style="text-align:center; color: #64748b;">Selecione um expositor para ver os pedidos.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/store.js"></script>
+    <script>
+        const exhibitorSelect = document.getElementById('exhibitorSelect');
+        const salesArea = document.getElementById('salesArea');
+        const productSelect = document.getElementById('productSelect');
+        const cartList = document.getElementById('cartList');
+        const cartTotalEl = document.getElementById('cartTotal');
+        const ordersList = document.getElementById('ordersList');
+
+        let currentCart = [];
+        let currentProducts = [];
+
+        function loadExhibitors() {
+            const exhibitors = Store.getExhibitors();
+            exhibitors.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex.id;
+                option.textContent = ex.name;
+                exhibitorSelect.appendChild(option);
+            });
+        }
+
+        function updateProductSelect(exhibitorId) {
+            currentProducts = Store.getProducts(exhibitorId);
+            productSelect.innerHTML = '<option value="">-- Escolha --</option>';
+            currentProducts.forEach(p => {
+                if (p.stock > 0) {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = `${p.name} (R$ ${p.price.toFixed(2)}) - Restam: ${p.stock}`;
+                    productSelect.appendChild(option);
+                }
+            });
+        }
+
+        function renderCart() {
+            if (currentCart.length === 0) {
+                cartList.innerHTML = '<p style="color: #64748b; font-size: 0.875rem; text-align: center;">Carrinho vazio</p>';
+                cartTotalEl.textContent = 'R$ 0,00';
+                return;
+            }
+
+            cartList.innerHTML = '';
+            let total = 0;
+
+            currentCart.forEach((item, index) => {
+                const itemTotal = item.quantity * item.unitPrice;
+                total += itemTotal;
+
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <span>${item.quantity}x ${item.name}</span>
+                    <span>R$ ${itemTotal.toFixed(2)} <small style="color:red; cursor:pointer;" onclick="removeFromCart(${index})">[X]</small></span>
+                `;
+                cartList.appendChild(div);
+            });
+
+            cartTotalEl.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        window.removeFromCart = (index) => {
+            currentCart.splice(index, 1);
+            renderCart();
+        };
+
+        function renderOrders(exhibitorId) {
+            const orders = Store.getOrders(exhibitorId);
+            ordersList.innerHTML = '';
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="text-align:center; color: #64748b;">Nenhum pedido registrado.</p>';
+                return;
+            }
+
+            // Show latest first
+            orders.reverse().forEach(order => {
+                const div = document.createElement('div');
+                div.style.borderBottom = '1px solid #e2e8f0';
+                div.style.padding = '1rem 0';
+
+                const statusColor = order.status === 'Novo' ? 'warning' : (order.status === 'Entregue' ? 'success' : 'secondary');
+
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <strong>#${order.id.toString().slice(-4)} - ${order.clientName}</strong>
+                        <span class="badge ${statusColor}">${order.status}</span>
+                    </div>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-bottom:0.5rem;">
+                        ${new Date(order.createdAt).toLocaleString()}
+                    </div>
+                    <ul style="font-size: 0.9rem; margin-bottom:0.5rem; padding-left:1rem;">
+                        ${order.items.map(i => `<li>${i.quantity}x Produto ID ${i.productId} (R$ ${i.unitPrice})</li>`).join('')}
+                    </ul>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>Total: R$ ${order.totalValue.toFixed(2)}</strong>
+                        ${order.status === 'Novo' ? `<button onclick="updateStatus(${order.id}, 'Em Preparação')" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Iniciar</button>` : ''}
+                        ${order.status === 'Em Preparação' ? `<button onclick="updateStatus(${order.id}, 'Entregue')" style="padding:0.25rem 0.5rem; font-size:0.8rem; background-color:var(--success-color);">Entregar</button>` : ''}
+                    </div>
+                `;
+                ordersList.appendChild(div);
+            });
+        }
+
+        window.updateStatus = (orderId, status) => {
+            Store.updateOrderStatus(orderId, status);
+            renderOrders(exhibitorSelect.value);
+            // Also need to refresh stats if needed, but dashboard is separate page
+        };
+
+        // Event Listeners
+        exhibitorSelect.addEventListener('change', () => {
+            const exId = exhibitorSelect.value;
+            if (exId) {
+                salesArea.classList.remove('hidden');
+                updateProductSelect(exId);
+                renderOrders(exId);
+                currentCart = [];
+                renderCart();
+            } else {
+                salesArea.classList.add('hidden');
+                ordersList.innerHTML = '<p style="text-align:center; color: #64748b;">Selecione um expositor para ver os pedidos.</p>';
+            }
+        });
+
+        document.getElementById('btnAddItem').addEventListener('click', () => {
+            const productId = productSelect.value;
+            const quantity = parseInt(document.getElementById('qtyInput').value);
+
+            if (!productId || quantity <= 0) return;
+
+            const product = currentProducts.find(p => p.id == productId);
+            if (product) {
+                if (quantity > product.stock) {
+                    alert('Estoque insuficiente!');
+                    return;
+                }
+
+                currentCart.push({
+                    productId: product.id,
+                    name: product.name,
+                    quantity: quantity,
+                    unitPrice: product.price
+                });
+                renderCart();
+                document.getElementById('qtyInput').value = 1;
+                productSelect.value = "";
+            }
+        });
+
+        document.getElementById('btnFinishOrder').addEventListener('click', () => {
+            if (currentCart.length === 0) {
+                alert('O carrinho está vazio.');
+                return;
+            }
+
+            const clientName = document.getElementById('clientName').value || 'Cliente Balcão';
+
+            Store.addOrder({
+                exhibitorId: exhibitorSelect.value,
+                clientName: clientName,
+                items: currentCart
+            });
+
+            alert('Pedido registrado com sucesso!');
+            currentCart = [];
+            document.getElementById('clientName').value = '';
+            renderCart();
+            // Refresh
+            updateProductSelect(exhibitorSelect.value); // stock updated
+            renderOrders(exhibitorSelect.value);
+        });
+
+        loadExhibitors();
+    </script>
+</body>
+
+</html>
