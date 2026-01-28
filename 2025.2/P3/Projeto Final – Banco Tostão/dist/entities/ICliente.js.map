@@ -1,0 +1,1 @@
+{"version":3,"file":"ICliente.js","sourceRoot":"","sources":["../../src/entities/ICliente.ts"],"names":[],"mappings":"","sourcesContent":["export interface Cliente {\r\n    id: number;\r\n    nome: string;\r\n    cpf: string;\r\n    email: string;\r\n    criado_em: Date\r\n}"]}

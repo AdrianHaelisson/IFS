@@ -1,0 +1,1 @@
+{"version":3,"file":"ITransação.js","sourceRoot":"","sources":["../../src/entities/ITransação.ts"],"names":[],"mappings":"","sourcesContent":["export interface Transacao {\r\n    id: number;\r\n    id_conta: string;\r\n    tipo: string;\r\n    valor: number;\r\n    descricao: string;\r\n    criado_em: Date;\r\n}"]}

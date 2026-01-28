@@ -1,0 +1,1 @@
+{"version":3,"file":"IConta.js","sourceRoot":"","sources":["../../src/entities/IConta.ts"],"names":[],"mappings":"","sourcesContent":["export interface Conta {\r\n    id: number;\r\n    id_cliente: string;\r\n    numero_conta: string;\r\n    saldo: string;\r\n    criado_em: Date;\r\n}"]}
