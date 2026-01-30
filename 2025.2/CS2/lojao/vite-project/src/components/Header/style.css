@@ -1,0 +1,16 @@
+nav {
+  background-color: red;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  padding: 20px;
+}
+nav a {
+  color: #fff;
+  margin-bottom: 5px;
+  display: block;
+}
+nav h1 {
+  margin-bottom: 20px;
+}

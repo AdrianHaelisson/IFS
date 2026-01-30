@@ -16,7 +16,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--surface-color);
             padding: 1.5rem;
             border-radius: 0.5rem;
             box-shadow: var(--shadow-sm);
@@ -25,7 +25,7 @@
 
         .stat-card h3 {
             font-size: 0.875rem;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
@@ -46,8 +46,7 @@
         </header>
 
         <main>
-            <div id="team-info-banner" class="card"
-                style="background-color: #e0f2fe; border: 1px solid #bae6fd; margin-bottom: 2rem;">
+            <div id="team-info-banner" class="card info-banner">
                 <h2>Olá, <span id="memberName"></span>!</h2>
                 <p>Você está gerenciando a equipe: <strong id="teamNameLoading">...</strong></p>
             </div>
@@ -70,7 +69,13 @@
 
             <!-- CHART SECTION -->
             <div class="card" style="margin-bottom: 2rem; padding:1rem;">
-                <h3 style="margin-bottom:1rem;">Meus Produtos Mais Vendidos</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3>Meus Produtos Mais Vendidos</h3>
+                    <select id="chartMetric" style="width:auto; padding:0.3rem;" onchange="renderMyOrders()">
+                        <option value="qty">Por Quantidade</option>
+                        <option value="value">Por Faturamento</option>
+                    </select>
+                </div>
                 <div style="position: relative; height:250px; width:100%;">
                     <canvas id="mySalesChart"></canvas>
                 </div>
@@ -102,10 +107,14 @@
                             <input type="text" id="prodName" required placeholder="Ex: Bolo ou Limpeza de PC">
                         </div>
                         <div class="form-group">
+                            <label>Descrição (Opcional)</label>
+                            <textarea id="prodDesc" rows="2" placeholder="Detalhes do produto..."></textarea>
+                        </div>
+                        <div class="form-group">
                             <label>URL da Imagem (ou upload abaixo)</label>
                             <input type="url" id="prodImage" placeholder="https://exemplo.com/foto.jpg">
                             <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
-                                <span style="font-size:0.85rem; color:#64748b;">Ou arquivo:</span>
+                                <span style="font-size:0.85rem; color:var(--text-secondary);">Ou arquivo:</span>
                                 <input type="file" id="prodFile" accept="image/*" style="font-size:0.85rem;">
                             </div>
                         </div>
@@ -139,7 +148,7 @@
                 <div class="card">
                     <h2>Pedidos Recebidos</h2>
                     <div id="ordersList">
-                        <p style="text-align:center; color: #64748b;">Nenhum pedido ainda.</p>
+                        <p style="text-align:center; color: var(--text-secondary);">Nenhum pedido ainda.</p>
                     </div>
                 </div>
             </div>
@@ -195,11 +204,10 @@
                     ? '<span class="badge info">Serviço</span>'
                     : '<span class="badge success">Produto</span>';
 
-                const stockDisplay = p.type === 'Serviço'
-                    ? '<span style="color:#666; font-size:0.9rem;">-</span>'
-                    : `<input type="number" 
+                const stockDisplay = `<input type="number" 
                                value="${p.stock}" 
-                               style="width: 70px; padding: 0.2rem; text-align: center;" 
+                               class="stock-input"
+                               style="width: 70px; padding: 0.2rem; text-align: center; border: 1px solid var(--border-color); border-radius: 4px; background: var(--surface-color); color: var(--text-primary);" 
                                onchange="updateStock(${p.id}, this.value)">`;
 
                 const imgHtml = p.image ? `<img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; margin-right:0.5rem; vertical-align:middle;">` : '';
@@ -262,6 +270,7 @@
             if (product) {
                 editingProductId = id;
                 document.getElementById('prodName').value = product.name;
+                document.getElementById('prodDesc').value = product.description || '';
                 document.getElementById('prodPrice').value = product.price;
 
                 // Image Handling
@@ -288,9 +297,8 @@
                     }
                 }
 
-                if (product.type !== 'Serviço') {
-                    document.getElementById('prodStock').value = product.stock;
-                }
+                // Always populate stock now
+                document.getElementById('prodStock').value = product.stock;
 
                 // Change Button
                 const btn = document.getElementById('productForm').querySelector('button[type="submit"]');
@@ -313,9 +321,9 @@
                 name: document.getElementById('prodName').value,
                 price: document.getElementById('prodPrice').value,
                 image: document.getElementById('prodImage').value || currentFileBase64,
-                stock: selectedType === 'Serviço' ? 999999 : document.getElementById('prodStock').value,
+                stock: document.getElementById('prodStock').value,
                 type: selectedType,
-                description: ''
+                description: document.getElementById('prodDesc').value
             };
 
             if (editingProductId) {
@@ -343,7 +351,8 @@
             renderMyProducts();
         });
 
-        // Toggle UI based on Type
+        // Toggle UI based on Type - REMOVED per user request (Stock applies to Services too now)
+        /*
         document.querySelectorAll('input[name="prodType"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const stockDiv = document.getElementById('stockContainer');
@@ -358,6 +367,7 @@
                 }
             });
         });
+        */
 
         // --- Orders Logic ---
         function renderMyOrders() {
@@ -372,7 +382,7 @@
             const todayStr = new Date().toDateString();
 
             if (orders.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color: #64748b;">Nenhum pedido ainda.</p>';
+                container.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">Nenhum pedido ainda.</p>';
             } else {
                 orders.forEach(o => {
                     // Calc details
@@ -398,7 +408,7 @@
 
             orders.reverse().forEach(order => {
                 const div = document.createElement('div');
-                div.style.borderBottom = '1px solid #e2e8f0';
+                div.style.borderBottom = '1px solid var(--border-color)';
                 div.style.padding = '1rem 0';
 
                 // Status translator
@@ -415,11 +425,11 @@
                     const paid = parseFloat(order.amountPaid);
 
                     if (ch > 0.005) {
-                        changeHtml = `<div style="margin-top:0.25rem; font-size:0.85rem; color:#166534; background-color:#dcfce7; padding:0.25rem 0.5rem; border-radius:4px; display:inline-block;">
+                        changeHtml = `<div class="badge-subtle success">
                             <strong>Troco: R$ ${ch.toFixed(2)}</strong> (Pagou R$ ${paid.toFixed(2)})
                         </div>`;
                     } else {
-                        changeHtml = `<div style="margin-top:0.25rem; font-size:0.85rem; color:#64748b; background-color:#f1f5f9; padding:0.25rem 0.5rem; border-radius:4px; display:inline-block;">
+                        changeHtml = `<div class="badge-subtle neutral">
                             <span style="font-weight:600;">Pagamento Exato</span>
                         </div>`;
                     }
@@ -433,7 +443,7 @@
                              <span class="badge ${payColor}">${payStatus}</span>
                         </div>
                     </div>
-                    <div style="font-size:0.85rem; color:#64748b; margin-bottom:0.5rem;">
+                    <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem;">
                         Pagamento via: <strong>${payMethod}</strong>
                         ${changeHtml}
                     </div>
@@ -445,6 +455,7 @@
                         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
                             ${payStatus === 'Pendente' && order.status !== 'Cancelado' ? `<button onclick="markPaid(${order.id})" class="secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; background-color:#dcfce7; color:#166534; border:1px solid #bbf7d0;">Marcar Pago</button>` : ''}
                             ${order.status === 'Novo' ? `<button onclick="updateStatus(${order.id}, 'Em Preparação')" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Aceitar</button>` : ''}
+                            ${order.status === 'Novo' || order.status === 'Em Preparação' ? `<button onclick="cancelOrder(${order.id})" class="secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; color:var(--danger-color); border-color:var(--danger-color); margin-left:0.5rem;">Cancelar</button>` : ''}
                             ${order.status === 'Em Preparação' ? `<button onclick="updateStatus(${order.id}, 'Entregue')" style="padding:0.25rem 0.5rem; font-size:0.8rem; background-color:var(--success-color);">Entregar</button>` : ''}
                         </div>
                     </div>
@@ -464,6 +475,17 @@
                 renderMyOrders();
             }
         }
+
+        window.cancelOrder = (id) => {
+            if (confirm('Tem certeza que deseja cancelar este pedido? O estoque será revertido.')) {
+                if (Store.cancelOrder(id)) {
+                    renderMyOrders();
+                    renderMyProducts(); // Update stock display
+                } else {
+                    alert('Erro ao cancelar pedido.');
+                }
+            }
+        }
         let myChartInstance = null;
         function updateMyChart(orders) {
             const ctx = document.getElementById('mySalesChart');
@@ -471,10 +493,13 @@
 
             // 1. Aggregate
             const productCounts = {};
+            const metric = document.getElementById('chartMetric') ? document.getElementById('chartMetric').value : 'qty';
+
             orders.forEach(o => {
-                if (o.items) {
+                if (o.items && o.status !== 'Cancelado') {
                     o.items.forEach(item => {
-                        productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+                        const val = metric === 'value' ? (item.quantity * item.unitPrice) : item.quantity;
+                        productCounts[item.name] = (productCounts[item.name] || 0) + val;
                     });
                 }
             });
@@ -499,7 +524,7 @@
                     datasets: [{
                         label: 'Vendas',
                         data: data,
-                        backgroundColor: '#10b981',
+                        backgroundColor: '#22c55e',
                         borderRadius: 4
                     }]
                 },
@@ -507,7 +532,26 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        const metric = document.getElementById('chartMetric').value;
+                                        if (metric === 'value') {
+                                            label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        } else {
+                                            label += context.parsed.y;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: { beginAtZero: true, ticks: { stepSize: 1 } }
@@ -526,6 +570,7 @@
             renderMyProducts();
         }, 10000);
     </script>
+    <script src="assets/js/theme.js"></script>
 </body>
 
 </html>

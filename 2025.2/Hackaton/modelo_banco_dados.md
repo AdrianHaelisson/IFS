@@ -46,7 +46,7 @@ erDiagram
     TB_PEDIDOS {
         int id PK
         int expositor_id FK
-        int consumidor_id FK "Nullable (Se usuário deletado ou convidado)"
+        int consumidor_id FK "Referencia TB_USUARIOS.id (role = CONSUMER). Nullable (se usuario deletado ou convidado)"
         string nome_cliente
         decimal valor_total
         enum status "NOVO, EM_PREPARACAO, ENTREGUE, CANCELADO"
@@ -68,6 +68,8 @@ erDiagram
         decimal subtotal
     }
 ```
+
+> Nota: `consumidor_id` e uma FK para `TB_USUARIOS.id`, usada apenas quando o usuario tem `role = 'CONSUMER'`. Para pedidos de convidado ou quando o usuario foi removido, este campo permanece nulo.
 
 ## Dicionário de Dados
 
@@ -93,7 +95,7 @@ Itens (bens ou serviços) oferecidos pelos expositores.
 ### 4. TB_PEDIDOS (Orders)
 Transações de compra realizadas.
 *   **id**: Chave primária.
-*   **consumidor_id**: Vincula ao usuário que comprou (se logado).
+*   **consumidor_id**: FK para `TB_USUARIOS.id` filtrando `role = 'CONSUMER'`. Nulo para convidado ou usuario removido.
 *   **nome_cliente**: Nome de exibição do cliente.
 *   **expositor_id**: Expositor que recebeu o pedido.
 *   **status**: Estado atual do fluxo ('Novo' -> 'Em Preparação' -> 'Entregue').
@@ -108,3 +110,10 @@ Detalhes dos produtos em cada pedido (tabela pivô).
 *   **Passwords**: No protótipo atual estão em texto plano, mas no banco real devem ser hashes (ex: bcrypt).
 *   **Imagens**: Podem ser armazenadas como URLs (CDN/S3) ou Base64 (menos recomendado para produção, mas usado no protótipo).
 *   **Troco**: A lógica de troco é calculada no front, mas os valores `valor_pago` e `troco` são persistidos para conferência do expositor.
+
+
+
+
+
+
+

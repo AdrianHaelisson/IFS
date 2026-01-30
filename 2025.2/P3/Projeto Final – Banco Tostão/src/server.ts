@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(authRoutes);
 app.use(userRoutes);
 app.use(saldoRoutes);
-app.use("/transacao", transactionRoutes);
+app.use(transactionRoutes);
 
 app.use(errorMiddleware);
 

@@ -9,7 +9,8 @@ const Store = {
         PRODUCTS: 'ifs_products',
         ORDERS: 'ifs_orders',
         USERS: 'ifs_users',
-        CURRENT_USER: 'ifs_current_user'
+        CURRENT_USER: 'ifs_current_user',
+        CART: 'ifs_cart'
     },
 
     init() {
@@ -17,6 +18,7 @@ const Store = {
         if (!localStorage.getItem(this.KEYS.EXHIBITORS)) localStorage.setItem(this.KEYS.EXHIBITORS, JSON.stringify([]));
         if (!localStorage.getItem(this.KEYS.PRODUCTS)) localStorage.setItem(this.KEYS.PRODUCTS, JSON.stringify([]));
         if (!localStorage.getItem(this.KEYS.ORDERS)) localStorage.setItem(this.KEYS.ORDERS, JSON.stringify([]));
+        if (!localStorage.getItem(this.KEYS.CART)) localStorage.setItem(this.KEYS.CART, JSON.stringify([]));
 
         // Inicializa usuários com o usuário Admin padrão se vazio
         if (!localStorage.getItem(this.KEYS.USERS)) {
@@ -34,7 +36,46 @@ const Store = {
         console.log('Store inicializada');
     },
 
-    // --- ASSISTENTES GENÉRICOS ---
+    // --- CART LOGIC ---
+    getCart() {
+        return this._get(this.KEYS.CART);
+    },
+
+    addToCart(item) {
+        // item: { productId, name, price, quantity, exhibitorId, image }
+        const cart = this._get(this.KEYS.CART);
+        const existing = cart.find(i => i.productId == item.productId);
+        if (existing) {
+            existing.quantity += item.quantity;
+        } else {
+            cart.push(item);
+        }
+        this._save(this.KEYS.CART, cart);
+    },
+
+    removeFromCart(productId) {
+        let cart = this._get(this.KEYS.CART);
+        cart = cart.filter(i => i.productId != productId);
+        this._save(this.KEYS.CART, cart);
+    },
+
+    updateCartItemQuantity(productId, newQty) {
+        const cart = this._get(this.KEYS.CART);
+        const item = cart.find(i => i.productId == productId);
+        if (item) {
+            item.quantity = newQty;
+            if (item.quantity <= 0) {
+                this.removeFromCart(productId);
+            } else {
+                this._save(this.KEYS.CART, cart);
+            }
+        }
+    },
+
+    clearCart() {
+        this._save(this.KEYS.CART, []);
+    },
+
     _get(key) {
         return JSON.parse(localStorage.getItem(key)) || [];
     },
@@ -236,6 +277,31 @@ const Store = {
         const index = orders.findIndex(o => o.id == orderId);
         if (index > -1) {
             orders[index].paymentStatus = paymentStatus;
+            this._save(this.KEYS.ORDERS, orders);
+            return true;
+        }
+        return false;
+    },
+
+    cancelOrder(orderId) {
+        const orders = this._get(this.KEYS.ORDERS);
+        const index = orders.findIndex(o => o.id == orderId);
+        if (index > -1) {
+            const order = orders[index];
+            if (order.status === 'Cancelado') return false; // Já cancelado
+
+            // Reverter estoque
+            const products = this._get(this.KEYS.PRODUCTS);
+            order.items.forEach(item => {
+                const pIndex = products.findIndex(p => p.id == item.productId);
+                if (pIndex > -1) {
+                    products[pIndex].stock += item.quantity;
+                }
+            });
+            this._save(this.KEYS.PRODUCTS, products);
+
+            // Atualizar status
+            order.status = 'Cancelado';
             this._save(this.KEYS.ORDERS, orders);
             return true;
         }

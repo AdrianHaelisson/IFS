@@ -15,10 +15,10 @@
         }
 
         .product-card {
-            background: white;
+            background: var(--surface-color);
             padding: 1rem;
             border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -27,7 +27,7 @@
         .product-img-container {
             width: 100%;
             height: 150px;
-            background-color: #f1f5f9;
+            background-color: var(--background-color);
             border-radius: 4px;
             margin-bottom: 0.75rem;
             overflow: hidden;
@@ -44,7 +44,7 @@
 
         .product-placeholder {
             font-size: 2rem;
-            color: #cbd5e1;
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -53,7 +53,15 @@
     <div class="app-container">
         <header>
             <h1>Feira de Empreendedorismo</h1>
-            <div id="user-info"></div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button onclick="openCart()" class="secondary"
+                    style="position:relative; border:none; background:transparent; padding:0.5rem;">
+                    <span style="font-size:1.5rem;">🛒</span>
+                    <span id="cartCount"
+                        style="position:absolute; top:0; right:0; background-color:var(--primary-color); color:var(--surface-color); font-size:0.75rem; font-weight:bold; padding:0.1rem 0.4rem; border-radius:1rem; display:none;">0</span>
+                </button>
+                <div id="user-info"></div>
+            </div>
         </header>
 
         <main>
@@ -132,35 +140,33 @@
                 <option value="Cartão">Cartão</option>
             </select>
         </div>
-        <div id="cash-change-group"
-            style="display:none; background-color:#f8fafc; padding:0.75rem; border-radius:4px; margin-bottom:1rem; border:1px solid #e2e8f0;">
-            <div style="margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem;">
-                <span style="font-weight:600; font-size:0.9rem;">Precisa de troco?</span>
-                <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
-                    <input type="radio" name="needChange" value="yes" style="width:auto; margin-right:0.25rem;"> Sim
-                </label>
-                <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
-                    <input type="radio" name="needChange" value="no" checked style="width:auto; margin-right:0.25rem;">
-                    Não
-                </label>
-            </div>
-            <div id="change-input-wrapper" style="display:none;">
-                <label style="font-size:0.9rem;">Troco para quanto?</label>
-                <input type="number" id="modalCashAmount" step="0.01" placeholder="R$ 50,00"
-                    style="margin-top:0.25rem;">
-                <div style="text-align:right; font-weight:bold; color:var(--success-color); margin-top:0.5rem;"
-                    id="modalChangeDisplay">
-                    Troco: R$ 0.00
-                </div>
-            </div>
-            <p id="exact-change-msg" style="font-size:0.85rem; color:#64748b; margin:0;">
-                Sem troco (dinheiro trocado).
-            </p>
+        </select>
+    </div>
+    <div id="cash-change-group"
+        style="display:none; background-color:var(--background-color); padding:0.75rem; border-radius:4px; margin-bottom:1rem; border:1px solid var(--border-color);">
+        <div style="margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem;">
+            <span style="font-weight:600; font-size:0.9rem;">Precisa de troco?</span>
+            <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                <input type="radio" name="needChange" value="yes" style="width:auto; margin-right:0.25rem;"> Sim
+            </label>
+            <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                <input type="radio" name="needChange" value="no" checked style="width:auto; margin-right:0.25rem;">
+                Não
+            </label>
         </div>
-        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
-            <button onclick="closeModal()" class="secondary">Cancelar</button>
-            <button onclick="confirmBuy()">Confirmar Pedido</button>
+        <div id="change-input-wrapper" style="display:none;">
+            <label style="font-size:0.9rem;">Troco para quanto?</label>
+            <input type="number" id="modalCashAmount" step="0.01" placeholder="R$ 50,00" style="margin-top:0.25rem;">
+            <div style="text-align:right; font-weight:bold; color:var(--success-color); margin-top:0.5rem;"
+                id="modalChangeDisplay">
+                Troco: R$ 0.00
+            </div>
         </div>
+        <p id="exact-change-msg" style="font-size:0.85rem; color:#64748b; margin:0;">
+            Sem troco (dinheiro trocado).
+        </p>
+    </div>
+
     </div>
 
     <script src="assets/js/store.js"></script>
@@ -277,7 +283,7 @@
                         </div>
                         <div style="margin-top:1rem;">
                             <strong style="display:block; font-size:1.2rem; margin-bottom:0.5rem;">R$ ${p.price.toFixed(2)}</strong>
-                            <button onclick="openModal(${p.id})" style="width:100%;">Comprar</button>
+                            <button onclick="openAddModal(${p.id})" style="width:100%;">Adicionar</button>
                         </div>
                     `;
                     catalogDiv.appendChild(div);
@@ -285,137 +291,334 @@
             });
         }
 
-        // Modal Logic
-        window.openModal = (prodId) => {
+        // Cart & Modal Logic
+        let currentModalProduct = null;
+
+        // --- NEW MODAL: Add to Cart ---
+        window.openAddModal = (prodId) => {
             const products = Store.getProducts();
             currentModalProduct = products.find(p => p.id == prodId);
+
             if (currentModalProduct) {
-                document.getElementById('modalProdName').textContent = currentModalProduct.name;
-
-                // Update Label with Unit
-                const unit = currentModalProduct.unit || 'un';
-                document.getElementById('modalQtyLabel').textContent = `Quantidade (${unit})`;
-
-                const qtyInput = document.getElementById('modalQty');
-                qtyInput.value = 1;
-                qtyInput.min = 1;
-
-                // Set Max if it is a Product (not Service/infinite stock)
-                if (currentModalProduct.type !== 'Serviço') {
-                    qtyInput.max = currentModalProduct.stock;
-                } else {
-                    qtyInput.removeAttribute('max');
-                }
-
-                // Reset Payment UI
-                // Reset Payment UI
-                document.getElementById('modalPayment').value = 'Dinheiro';
-                document.getElementById('cash-change-group').style.display = 'block';
-                // Reset Radios
-                const radios = document.getElementsByName('needChange');
-                radios.forEach(r => { if (r.value === 'no') r.checked = true; });
-
-                document.getElementById('change-input-wrapper').style.display = 'none';
-                document.getElementById('exact-change-msg').style.display = 'block';
-                document.getElementById('modalCashAmount').value = '';
-                document.getElementById('modalChangeDisplay').textContent = 'Troco: R$ 0.00';
-
+                // Render Modal content for ADDING
+                const container = document.getElementById('buyModal');
+                container.innerHTML = `
+                        <h3>Adicionar ao Carrinho</h3>
+                        <div style="margin-bottom:1rem;">
+                            <strong>${currentModalProduct.name}</strong><br>
+                            <span style="color:var(--text-secondary); font-size:0.9rem;">R$ ${currentModalProduct.price.toFixed(2)} / ${currentModalProduct.unit || 'un'}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantidade</label>
+                            <input type="number" id="modalQty" value="1" min="1" max="${currentModalProduct.stock}" style="width:100%;">
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+                            <button onclick="closeModal()" class="secondary">Cancelar</button>
+                            <button onclick="confirmAddToCart()">Adicionar</button>
+                        </div>
+                  `;
                 document.getElementById('buyModal').style.display = 'block';
+                // Focus input
+                setTimeout(() => document.getElementById('modalQty').focus(), 100);
             }
         }
 
-        // Change Calc Logic
-        document.getElementById('modalPayment').addEventListener('change', (e) => {
-            const group = document.getElementById('cash-change-group');
-            if (e.target.value === 'Dinheiro') group.style.display = 'block';
-            else group.style.display = 'none';
-        });
-
-        document.getElementsByName('needChange').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const inputWrapper = document.getElementById('change-input-wrapper');
-                const msg = document.getElementById('exact-change-msg');
-                if (e.target.value === 'yes') {
-                    inputWrapper.style.display = 'block';
-                    msg.style.display = 'none';
-                } else {
-                    inputWrapper.style.display = 'none';
-                    msg.style.display = 'block';
-                }
-            });
-        });
-
-        document.getElementById('modalCashAmount').addEventListener('input', (e) => {
+        window.confirmAddToCart = () => {
             if (!currentModalProduct) return;
-            const val = parseFloat(e.target.value);
-            const qty = parseInt(document.getElementById('modalQty').value);
-            const total = currentModalProduct.price * qty;
+            const qtyVal = parseInt(document.getElementById('modalQty').value);
 
-            if (!isNaN(val) && val >= total) {
-                const change = val - total;
-                document.getElementById('modalChangeDisplay').textContent = `Troco: R$ ${change.toFixed(2)}`;
-                document.getElementById('modalChangeDisplay').style.color = 'var(--success-color)';
-            } else {
-                document.getElementById('modalChangeDisplay').textContent = 'Valor insuficiente';
-                document.getElementById('modalChangeDisplay').style.color = 'var(--danger-color)';
+            // Validation
+            if (isNaN(qtyVal) || qtyVal < 1) {
+                alert('Quantidade inválida');
+                return;
             }
-        });
 
+            // Check Stock (checking against store again for safety, or current object)
+            const products = Store.getProducts();
+            const p = products.find(i => i.id == currentModalProduct.id);
+
+            // Check existing cart qty + new qty
+            const cart = Store.getCart();
+            const existing = cart.find(i => i.productId == p.id);
+            const currentCartQty = existing ? existing.quantity : 0;
+
+            if ((currentCartQty + qtyVal) > p.stock) {
+                alert('Estoque insuficiente! Você já tem ' + currentCartQty + ' no carrinho.');
+                return;
+            }
+
+            Store.addToCart({
+                productId: p.id,
+                name: p.name,
+                price: p.price,
+                quantity: qtyVal,
+                exhibitorId: p.exhibitorId,
+                image: p.image
+            });
+
+            updateCartCount();
+            closeModal();
+            // alert('Adicionado!'); // Maybe too intrusive? Let's skip alert for smoother flow.
+        }
+
+        function updateCartCount() {
+            const cart = Store.getCart();
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const badge = document.getElementById('cartCount');
+            if (count > 0) {
+                badge.style.display = 'block';
+                badge.textContent = count;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        window.openCart = () => {
+            renderCartModal();
+            document.getElementById('buyModal').style.display = 'block';
+        }
+
+        function renderCartModal() {
+            const cart = Store.getCart();
+            const modalTitle = document.querySelector('#buyModal h3');
+            modalTitle.textContent = 'Meu Carrinho';
+
+            // Hide single product elements, ideally we should have separate modals or switch content
+            // Let's switch content dynamically for simplicity or cleanliness
+
+            // BUT wait, the existing modal is "Comprar Produto" specific.
+            // Let's REUSE it but change content slightly OR just build the HTML here.
+
+            const container = document.getElementById('buyModal');
+
+            // Overwrite innerHTML completely for Cart View
+            let itemsHtml = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                itemsHtml = '<p style="text-align:center; color:var(--text-secondary);">Carrinho vazio.</p>';
+            } else {
+                itemsHtml = '<ul style="list-style:none; padding:0; margin-bottom:1rem; max-height:300px; overflow-y:auto;">';
+                cart.forEach(item => {
+                    total += item.price * item.quantity;
+                    // Get max stock for this item to limit input
+                    const productInfo = Store.getProducts().find(p => p.id == item.productId);
+                    const maxStock = productInfo ? productInfo.stock : 999;
+
+                    itemsHtml += `
+                        <li style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:0.75rem 0;">
+                            <div style="flex:1;">
+                                <strong>${item.name}</strong>
+                                <div style="font-size:0.8rem; color:var(--text-secondary);">R$ ${item.price.toFixed(2)} un.</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <input type="number" 
+                                       value="${item.quantity}" 
+                                       min="1" 
+                                       max="${maxStock}"
+                                       onchange="updateItemQty(${item.productId}, this.value)"
+                                       style="width:50px; padding:0.25rem; text-align:center;">
+                                <button onclick="removeFromCart(${item.productId})" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:transparent; color:var(--danger-color); border:1px solid var(--danger-color);">Wait</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                // Replace "Wait" button text with icon or X. 
+                // Ah, simpler string replace:
+                itemsHtml = itemsHtml.replace(/Wait/g, 'X');
+
+                itemsHtml += '</ul>';
+                itemsHtml += `<div style="text-align:right; font-weight:bold; margin-bottom:1rem; font-size:1.1rem;">Total: R$ ${total.toFixed(2)}</div>`;
+            }
+
+            container.innerHTML = `
+                <h3>Meu Carrinho</h3>
+                ${itemsHtml}
+                
+                ${cart.length > 0 ? `
+                <div class="form-group">
+                    <label>Forma de Pagamento</label>
+                    <select id="modalPayment">
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="PIX">PIX</option>
+                        <option value="Cartão">Cartão</option>
+                    </select>
+                </div>
+                <div id="cash-change-group" style="display:block; background-color:var(--background-color); padding:0.75rem; border-radius:4px; margin-bottom:1rem; border:1px solid var(--border-color);">
+                     <div style="margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem;">
+                        <span style="font-weight:600; font-size:0.9rem;">Precisa de troco?</span>
+                        <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                            <input type="radio" name="needChange" value="yes" style="width:auto; margin-right:0.25rem;"> Sim
+                        </label>
+                        <label style="display:flex; align-items:center; cursor:pointer; font-size:0.9rem;">
+                            <input type="radio" name="needChange" value="no" checked style="width:auto; margin-right:0.25rem;"> Não
+                        </label>
+                    </div>
+                    <div id="change-input-wrapper" style="display:none;">
+                        <label style="font-size:0.9rem;">Troco para quanto?</label>
+                        <input type="number" id="modalCashAmount" step="0.01" placeholder="R$ 50,00" style="margin-top:0.25rem;">
+                        <div style="text-align:right; font-weight:bold; color:var(--success-color); margin-top:0.5rem;" id="modalChangeDisplay">
+                            Troco: R$ 0.00
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+                    <button onclick="closeModal()" class="secondary">Fechar</button>
+                    ${cart.length > 0 ? `<button onclick="confirmCheckout()">Finalizar Compra</button>` : ''}
+                </div>
+            `;
+
+            // Re-attach Element Listeners because we wiped innerHTML
+            if (cart.length > 0) {
+                document.getElementById('modalPayment').addEventListener('change', (e) => {
+                    const group = document.getElementById('cash-change-group');
+                    if (e.target.value === 'Dinheiro') group.style.display = 'block';
+                    else group.style.display = 'none';
+                });
+
+                document.querySelectorAll('input[name="needChange"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        const inputWrapper = document.getElementById('change-input-wrapper');
+                        if (e.target.value === 'yes') {
+                            inputWrapper.style.display = 'block';
+                        } else {
+                            inputWrapper.style.display = 'none';
+                        }
+                    });
+                });
+
+                document.getElementById('modalCashAmount').addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    if (!isNaN(val) && val >= total) {
+                        const change = val - total;
+                        document.getElementById('modalChangeDisplay').textContent = `Troco: R$ ${change.toFixed(2)}`;
+                        document.getElementById('modalChangeDisplay').style.color = 'var(--success-color)';
+                    } else {
+                        document.getElementById('modalChangeDisplay').textContent = 'Valor insuficiente';
+                        document.getElementById('modalChangeDisplay').style.color = 'var(--danger-color)';
+                    }
+                });
+            }
+        }
+
+        window.updateItemQty = (prodId, newQty) => {
+            const qty = parseInt(newQty);
+            if (isNaN(qty) || qty < 1) return; // Ignore or reset?
+
+            // Check stock
+            const productInfo = Store.getProducts().find(p => p.id == prodId);
+            if (productInfo && qty > productInfo.stock) {
+                alert('Estoque insuficiente! Máximo disponível: ' + productInfo.stock);
+                Store.updateCartItemQuantity(prodId, productInfo.stock);
+                renderCartModal();
+                return;
+            }
+
+            Store.updateCartItemQuantity(prodId, qty);
+            renderCartModal();
+            updateCartCount();
+        }
+
+        window.removeFromCart = (id) => {
+            Store.removeFromCart(id);
+            renderCartModal();
+            updateCartCount();
+        }
+
+        window.confirmCheckout = () => {
+            const cart = Store.getCart();
+            if (cart.length === 0) return;
+
+            const payMethod = document.getElementById('modalPayment').value;
+            let amountPaidInput = 0;
+            const totalCart = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            if (payMethod === 'Dinheiro') {
+                const needsChange = document.querySelector('input[name="needChange"]:checked').value === 'yes';
+                if (needsChange) {
+                    amountPaidInput = parseFloat(document.getElementById('modalCashAmount').value);
+                    if (isNaN(amountPaidInput) || amountPaidInput < totalCart) {
+                        alert('Valor para troco deve ser maior que o Total do Carrinho (R$ ' + totalCart.toFixed(2) + ')!');
+                        return;
+                    }
+                }
+            }
+
+            // Split Orders by Exhibitor
+            const ordersByExhibitor = {};
+            cart.forEach(item => {
+                if (!ordersByExhibitor[item.exhibitorId]) {
+                    ordersByExhibitor[item.exhibitorId] = {
+                        items: [],
+                        total: 0
+                    };
+                }
+                ordersByExhibitor[item.exhibitorId].items.push(item);
+                ordersByExhibitor[item.exhibitorId].total += (item.price * item.quantity);
+            });
+
+            // Create Orders
+            Object.entries(ordersByExhibitor).forEach(([exId, data]) => {
+                // Change Logic:
+                // We apply the "Amount Paid" to EACH order if provided, implying "Bring change for X".
+                // This ensures every exhibitor knows the bill size.
+
+                let changeVal = 0;
+                let orderAmountPaid = 0;
+
+                if (payMethod === 'Dinheiro') {
+                    if (amountPaidInput > 0) {
+                        // User said "Change for X"
+                        orderAmountPaid = amountPaidInput;
+                        changeVal = amountPaidInput - data.total;
+                    } else {
+                        // Exact change assumed or not specified
+                        orderAmountPaid = data.total;
+                        changeVal = 0;
+                    }
+                }
+
+                Store.addOrder({
+                    exhibitorId: exId,
+                    consumerId: user.id || 0,
+                    clientName: user.name || 'Consumidor',
+                    paymentMethod: payMethod,
+                    paymentStatus: 'Pendente',
+                    change: changeVal,
+                    amountPaid: orderAmountPaid,
+                    items: data.items.map(i => ({
+                        productId: i.productId,
+                        name: i.name,
+                        quantity: i.quantity,
+                        unitPrice: i.price
+                    }))
+                });
+            });
+
+            alert('Pedidos realizados com sucesso!');
+            Store.clearCart();
+            closeModal();
+            updateCartCount();
+            // Maybe renderOrders?
+            showTab('orders'); // Auto switch to orders tab to see status
+        }
+
+        window.openModal = (prodId) => {
+            // Deprecated/Refactored to addToCart
+            addToCartClick(prodId);
+        }
+
+        // Legacy Change Calc Logic removed/integrated into renderCartModal
         window.closeModal = () => {
             document.getElementById('buyModal').style.display = 'none';
             currentModalProduct = null;
         }
 
-        window.confirmBuy = () => {
-            if (!currentModalProduct) return;
-            const qty = parseInt(document.getElementById('modalQty').value);
-
-            if (qty > currentModalProduct.stock) {
-                alert('Estoque insuficiente!');
-                return;
-            }
-
-            const payMethod = document.getElementById('modalPayment').value;
-            let changeVal = 0;
-            let amountPaidVal = 0;
-
-            if (payMethod === 'Dinheiro') {
-                const needsChange = document.querySelector('input[name="needChange"]:checked').value === 'yes';
-                const total = currentModalProduct.price * qty;
-
-                if (needsChange) {
-                    amountPaidVal = parseFloat(document.getElementById('modalCashAmount').value);
-                    if (isNaN(amountPaidVal) || amountPaidVal < total) {
-                        alert('Valor para troco inválido ou insuficiente!');
-                        return;
-                    }
-                    changeVal = amountPaidVal - total;
-                } else {
-                    amountPaidVal = total;
-                    changeVal = 0;
-                }
-            }
-
-            Store.addOrder({
-                exhibitorId: currentModalProduct.exhibitorId,
-                consumerId: user.id || 0,
-                clientName: user.name || 'Consumidor',
-                paymentMethod: payMethod,
-                paymentStatus: 'Pendente',
-                change: changeVal,
-                amountPaid: amountPaidVal,
-                items: [{
-                    productId: currentModalProduct.id,
-                    name: currentModalProduct.name,
-                    quantity: qty,
-                    unitPrice: currentModalProduct.price
-                }]
-            });
-
-            alert('Pedido realizado com sucesso! Aguarde a entrega.');
-            closeModal();
-            renderCatalog(filterSelect.value);
-        }
+        /* 
+           Legacy confirmBuy removed. 
+        */
 
         // --- Orders Logic ---
         function renderMyOrders() {
@@ -459,7 +662,9 @@
 
         // Init
         renderCatalog();
+        updateCartCount();
     </script>
+    <script src="assets/js/theme.js"></script>
 </body>
 
 </html>

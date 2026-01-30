@@ -16,7 +16,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--surface-color);
             padding: 1.5rem;
             border-radius: 0.5rem;
             box-shadow: var(--shadow-sm);
@@ -25,7 +25,7 @@
 
         .stat-card h3 {
             font-size: 0.875rem;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
@@ -50,6 +50,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                 <button onclick="showTab('teams')" id="btn-teams">Gerenciar Equipes</button>
                 <button onclick="showTab('users')" id="btn-users" class="secondary">Gerenciar Usuários</button>
+                <button onclick="showTab('products')" id="btn-products" class="secondary">Gerenciar Produtos</button>
                 <button onclick="showTab('sales')" id="btn-sales" class="secondary">Acompanhar Vendas</button>
             </div>
 
@@ -138,6 +139,56 @@
                 </div>
             </div>
 
+            <!-- TAB: PRODUTOS (NOVO) -->
+            <div id="tab-products" class="card hidden">
+                <h2>Gerenciar Produtos (Todos)</h2>
+
+                <!-- Edit Form (Hidden by default, shown when editing) -->
+                <div id="adminProductFormContainer" class="hidden"
+                    style="margin-bottom: 2rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3>Editar Produto</h3>
+                    <form id="adminProductForm">
+                        <div class="grid-cols-2">
+                            <div class="form-group">
+                                <label>Nome do Item</label>
+                                <input type="text" id="admProdName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço (R$)</label>
+                                <input type="number" step="0.01" id="admProdPrice" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea id="admProdDesc" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Imagem</label>
+                            <input type="url" id="admProdImage">
+                        </div>
+                        <div style="display:flex; gap:1rem;">
+                            <button type="submit">Salvar Alterações</button>
+                            <button type="button" class="secondary" onclick="cancelEditProduct()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table id="allProductsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Expositor (Equipe)</th>
+                                <th>Preço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- TAB: VENDAS (DASHBOARD) -->
             <div id="tab-sales" class="card hidden">
                 <h2>Acompanhamento de Vendas</h2>
@@ -157,8 +208,14 @@
                     </div>
                 </div>
 
-                <div style="margin: 2rem 0; padding:1rem; border:1px solid #e2e8f0; border-radius:8px;">
-                    <h3 style="margin-bottom:1rem;">Produtos Mais Vendidos (Top DA FEIRA)</h3>
+                <div style="margin: 2rem 0; padding:1rem; border:1px solid var(--border-color); border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h3>Produtos Mais Vendidos (Top DA FEIRA)</h3>
+                        <select id="adminChartMetric" style="width:auto; padding:0.3rem;" onchange="renderSales()">
+                            <option value="qty">Por Quantidade</option>
+                            <option value="value">Por Faturamento</option>
+                        </select>
+                    </div>
                     <div style="position: relative; height:300px; width:100%;">
                         <canvas id="salesChart"></canvas>
                     </div>
@@ -212,21 +269,25 @@
         // UI Logic
         const tabTeams = document.getElementById('tab-teams');
         const tabUsers = document.getElementById('tab-users');
+        const tabProducts = document.getElementById('tab-products');
         const tabSales = document.getElementById('tab-sales');
 
         const btnTeams = document.getElementById('btn-teams');
         const btnUsers = document.getElementById('btn-users');
+        const btnProducts = document.getElementById('btn-products');
         const btnSales = document.getElementById('btn-sales');
 
         window.showTab = (tab) => {
             // Hide all
             tabTeams.classList.add('hidden');
             tabUsers.classList.add('hidden');
+            tabProducts.classList.add('hidden');
             tabSales.classList.add('hidden');
 
             // Reset buttons
             btnTeams.classList.add('secondary');
             btnUsers.classList.add('secondary');
+            btnProducts.classList.add('secondary');
             btnSales.classList.add('secondary');
 
             if (tab === 'teams') {
@@ -235,6 +296,10 @@
             } else if (tab === 'users') {
                 tabUsers.classList.remove('hidden');
                 btnUsers.classList.remove('secondary');
+            } else if (tab === 'products') {
+                tabProducts.classList.remove('hidden');
+                btnProducts.classList.remove('secondary');
+                renderAllProducts();
             } else if (tab === 'sales') {
                 tabSales.classList.remove('hidden');
                 btnSales.classList.remove('secondary');
@@ -274,7 +339,7 @@
                     <td>${t.course}</td>
                     <td>
                         <div style="display:flex; justify-content:space-between; align-items:center">
-                            <span>${members || '<span style="color:red; font-size:0.8rem">Sem membros</span>'}</span>
+                            <span>${members || '<span style="color:var(--danger-color); font-size:0.8rem">Sem membros</span>'}</span>
                             <div>
                                 <button onclick="editTeam(${t.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-right: 0.5rem;">Editar</button>
                                 <button onclick="deleteTeam(${t.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger-color); border-color: var(--danger-color);">Excluir</button>
@@ -448,6 +513,88 @@
             }
         });
 
+        // --- Product Management Logic ---
+        let editingAdminProdId = null;
+
+        function renderAllProducts() {
+            const products = Store.getProducts();
+            const exhibitors = Store.getExhibitors();
+            const tbody = document.querySelector('#allProductsTable tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                const exhibitor = exhibitors.find(e => e.id == p.exhibitorId);
+                const exhibitorName = exhibitor ? exhibitor.name : 'Desc. (ID ' + p.exhibitorId + ')';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>
+                        <div style="display:flex; flex-direction:column;">
+                            <strong>${p.name}</strong>
+                            <span style="font-size:0.8rem; color:var(--text-secondary);">${p.type}</span>
+                        </div>
+                    </td>
+                    <td>${exhibitorName}</td>
+                    <td>R$ ${p.price.toFixed(2)}</td>
+                    <td>
+                         <button onclick="editAdProduct(${p.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-right: 0.5rem;">Editar</button>
+                         <button onclick="deleteAdProduct(${p.id})" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--danger-color); border-color: var(--danger-color);">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.deleteAdProduct = (id) => {
+            if (confirm('Tem certeza que deseja remover este produto?')) {
+                Store.removeProduct(id);
+                renderAllProducts();
+            }
+        }
+
+        window.editAdProduct = (id) => {
+            const products = Store.getProducts();
+            const product = products.find(p => p.id == id);
+            if (product) {
+                editingAdminProdId = id;
+                document.getElementById('admProdName').value = product.name;
+                document.getElementById('admProdPrice').value = product.price;
+                document.getElementById('admProdDesc').value = product.description || '';
+                document.getElementById('admProdImage').value = product.image || ''; // Simplify for admin (URL only mainly)
+
+                // Show form
+                document.getElementById('adminProductFormContainer').classList.remove('hidden');
+            }
+        }
+
+        window.cancelEditProduct = () => {
+            editingAdminProdId = null;
+            document.getElementById('adminProductForm').reset();
+            document.getElementById('adminProductFormContainer').classList.add('hidden');
+        }
+
+        document.getElementById('adminProductForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (editingAdminProdId) {
+                const productData = {
+                    name: document.getElementById('admProdName').value,
+                    price: document.getElementById('admProdPrice').value,
+                    description: document.getElementById('admProdDesc').value,
+                    image: document.getElementById('admProdImage').value
+                };
+
+                // We need to keep other fields like exhibitorId, stock, type. Store.updateProduct merges, so passing partial is fine usually?
+                // Actually Store.updateProduct logic: products[index] = { ...products[index], ...normalized }; 
+                // YES, it merges.
+
+                Store.updateProduct(editingAdminProdId, productData);
+                alert('Produto atualizado!');
+                cancelEditProduct();
+                renderAllProducts();
+            }
+        });
+
         // --- Sales/Dashboard Logic ---
         function renderSales() {
             const allOrders = Store.getOrders();
@@ -528,10 +675,13 @@
 
             // 1. Aggregate Products
             const productCounts = {};
+            const metric = document.getElementById('adminChartMetric') ? document.getElementById('adminChartMetric').value : 'qty';
+
             orders.forEach(o => {
-                if (o.items) {
+                if (o.items && o.status !== 'Cancelado') {
                     o.items.forEach(item => {
-                        productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+                        const val = metric === 'value' ? (item.quantity * item.unitPrice) : item.quantity;
+                        productCounts[item.name] = (productCounts[item.name] || 0) + val;
                     });
                 }
             });
@@ -556,7 +706,7 @@
                     datasets: [{
                         label: 'Quantidade Vendida',
                         data: data,
-                        backgroundColor: '#3b82f6',
+                        backgroundColor: '#22c55e',
                         borderRadius: 4
                     }]
                 },
@@ -565,7 +715,26 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        title: { display: true, text: 'Top Produtos (Quantidade)' }
+                        title: { display: true, text: 'Top Produtos' },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        const metric = document.getElementById('adminChartMetric').value;
+                                        if (metric === 'value') {
+                                            label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        } else {
+                                            label += context.parsed.y;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: { beginAtZero: true, ticks: { stepSize: 1 } }
@@ -581,6 +750,7 @@
             renderSales();
         }
     </script>
+    <script src="assets/js/theme.js"></script>
 </body>
 
 </html>
