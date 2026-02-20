@@ -8,6 +8,17 @@ import Page404 from "./pages/Page404";
 import Pedidos from "./pages/Pedidos";
 import Perfil from "./pages/Perfil";
 
+function checkLogin(Component) {
+  const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+  if (usuarioLogado) {
+    return Component;
+  } else {
+    return (
+      <Navigate replace to="/login" state={{ prevPath: location.pathname }} />
+    );
+  }
+}
+
 export default function MyRoutes() {
   return (
     <Routes>
@@ -15,9 +26,9 @@ export default function MyRoutes() {
       <Route path="/categorias" element={<Categorias />} />
       <Route path="/carrinho" element={<Carrinho />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/pedidos" element={<Pedidos />} />
-      <Route path="/perfil" element={<Perfil />} />
-      <Route path="/logout" element={<Logout />} />
+      <Route path="/pedidos" element={checkLogin(<Pedidos />)} />
+      <Route path="/perfil" element={checkLogin(<Perfil />)} />
+      <Route path="/logout" element={checkLogin(<Logout />)} />
       <Route path="*" element={<Page404 />} />
     </Routes>
   );

@@ -23,7 +23,7 @@ export default function Produto({ produto }) {
       <img className="img-produto" src={produto.thumbnail} />
       <p>
         <strong>
-          {produto.title} ({produto.brand})
+          {produto.title} {produto.brand ? "(" + produto.brand + ")" : ""}
         </strong>
       </p>
       <p>R$ {produto.price}</p>

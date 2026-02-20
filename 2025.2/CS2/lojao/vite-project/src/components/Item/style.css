@@ -1,0 +1,27 @@
+.item {
+  background-color: lightgray;
+}
+
+.item-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.item-qty-btn {
+  border: 1px solid #333;
+  background: #fff;
+  color: #000;
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.item-qty-value {
+  min-width: 18px;
+  text-align: center;
+}
